@@ -103,8 +103,10 @@ public class APIAppointmentRequestController extends APIController {
     @GetMapping ( BASE_PATH + "/appointmentrequestForHCP" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP')" )
     public List<AppointmentRequest> getAppointmentRequestsForHCP () {
-
+        // grab user object representing current user
         final User hcp = userService.findByName( LoggerUtil.currentUser() );
+        // TODO: null check needed?
+        // TODO: does status.pending need to be a screened condition?
 
         return service.findByHcp( hcp ).stream().filter( e -> e.getStatus().equals( Status.PENDING ) )
                 .collect( Collectors.toList() );
@@ -122,19 +124,28 @@ public class APIAppointmentRequestController extends APIController {
     @GetMapping ( BASE_PATH + "/appointmentrequests/{id}" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_PATIENT')" )
     public ResponseEntity getAppointmentRequest ( @PathVariable ( "id" ) final Long id ) {
+        // grab appointment request w/ id given in route path
         final AppointmentRequest request = service.findById( id );
+        // if AppointmentRequest query not null
         if ( null != request ) {
             loggerUtil.log( TransactionType.APPOINTMENT_REQUEST_VIEWED, request.getPatient(), request.getHcp() );
 
             /* Patient can't look at anyone else's requests */
+            // grab currently logged in user
             final User self = userService.findByName( LoggerUtil.currentUser() );
+            // return Unauthorized status if currently logged in user is a
+            // patient and NOT the patient attached to retrieved
+            // AppointmentRequest
             if ( self.getRoles().contains( Role.ROLE_PATIENT ) && !request.getPatient().equals( self ) ) {
                 return new ResponseEntity( HttpStatus.UNAUTHORIZED );
             }
         }
         return null == request
+                // no request found? (request==null), return NOT_FOUND
+                // responseEntity
                 ? new ResponseEntity( errorResponse( "No AppointmentRequest found for id " + id ),
                         HttpStatus.NOT_FOUND )
+                // else, return OK status
                 : new ResponseEntity( request, HttpStatus.OK );
     }
 
@@ -156,13 +167,18 @@ public class APIAppointmentRequestController extends APIController {
     public ResponseEntity createAppointmentRequest ( @RequestBody final AppointmentRequestForm requestForm ) {
         try {
             requestForm.setPatient( LoggerUtil.currentUser() );
+            // build an AppointmentRequest from form object
             final AppointmentRequest request = service.build( requestForm );
+            // return ResponseEntity w/ status CONFLICT if an appointmentrequest
+            // with the id given in the form parameter already exists
             if ( null != service.findById( request.getId() ) ) {
                 return new ResponseEntity(
                         errorResponse( "AppointmentRequest with the id " + request.getId() + " already exists" ),
                         HttpStatus.CONFLICT );
             }
+            // save AppointmentRequest to
             service.save( request );
+            // log!
             loggerUtil.log( TransactionType.APPOINTMENT_REQUEST_SUBMITTED, request.getPatient(), request.getHcp() );
             return new ResponseEntity( request, HttpStatus.OK );
         }
@@ -183,7 +199,10 @@ public class APIAppointmentRequestController extends APIController {
     @DeleteMapping ( BASE_PATH + "/appointmentrequests/{id}" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_PATIENT')" )
     public ResponseEntity deleteAppointmentRequest ( @PathVariable final Long id ) {
+        // searh for appointmentrequest with given ID
         final AppointmentRequest request = service.findById( id );
+        // if appointmentrequest query turns up empty, return ResponseEntity w/
+        // NOT_FOUND status
         if ( null == request ) {
             return new ResponseEntity( errorResponse( "No AppointmentRequest found for id " + id ),
                     HttpStatus.NOT_FOUND );
@@ -195,6 +214,8 @@ public class APIAppointmentRequestController extends APIController {
             return new ResponseEntity( HttpStatus.UNAUTHORIZED );
         }
         try {
+            // attempt to delete the request and return a bad request
+            // ReponseEntity if anything goes wrong in the process
             service.delete( request );
             loggerUtil.log( TransactionType.APPOINTMENT_REQUEST_DELETED, request.getPatient(), request.getHcp() );
             return new ResponseEntity( id, HttpStatus.OK );
@@ -229,6 +250,9 @@ public class APIAppointmentRequestController extends APIController {
             final AppointmentRequest request = service.build( requestF );
             request.setId( id );
 
+            // if the given requestForm has a null id or the given request form
+            // has an ID that DOESNT
+            // match the given id
             if ( null != request.getId() && !id.equals( request.getId() ) ) {
                 return new ResponseEntity(
                         errorResponse( "The ID provided does not match the ID of the AppointmentRequest provided" ),
@@ -240,7 +264,7 @@ public class APIAppointmentRequestController extends APIController {
             if ( self.getRoles().contains( Role.ROLE_PATIENT ) && !request.getPatient().equals( self ) ) {
                 return new ResponseEntity( HttpStatus.UNAUTHORIZED );
             }
-
+            // grab AppointmentRequest w/ given ID
             final AppointmentRequest dbRequest = service.findById( id );
             if ( null == dbRequest ) {
                 return new ResponseEntity( errorResponse( "No AppointmentRequest found for id " + id ),
@@ -250,14 +274,18 @@ public class APIAppointmentRequestController extends APIController {
             service.save( request );
             loggerUtil.log( TransactionType.APPOINTMENT_REQUEST_UPDATED, request.getPatient(), request.getHcp() );
             if ( request.getStatus().getCode() == Status.APPROVED.getCode() ) {
+                // log event
                 loggerUtil.log( TransactionType.APPOINTMENT_REQUEST_APPROVED, request.getPatient(), request.getHcp() );
             }
             else {
+                // log event
                 loggerUtil.log( TransactionType.APPOINTMENT_REQUEST_DENIED, request.getPatient(), request.getHcp() );
             }
 
             return new ResponseEntity( request, HttpStatus.OK );
         }
+        // if any errors occur during parsing and updating of
+        // AppointmentRequests, return ResponseEntity w/ BAD_REQUEST status code
         catch ( final Exception e ) {
             return new ResponseEntity(
                     errorResponse( "Could not update " + requestF.toString() + " because of " + e.getMessage() ),
@@ -276,6 +304,8 @@ public class APIAppointmentRequestController extends APIController {
     @GetMapping ( BASE_PATH + "/viewAppointments" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP')" )
     public List<AppointmentRequest> upcomingAppointments () {
+        // grab the user instance stored in the database for the user currently
+        // logged in
         final User hcp = userService.findByName( LoggerUtil.currentUser() );
 
         final List<AppointmentRequest> appointment = service.findByHcp( hcp ).stream()
