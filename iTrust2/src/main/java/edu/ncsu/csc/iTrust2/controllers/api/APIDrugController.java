@@ -53,20 +53,24 @@ public class APIDrugController extends APIController {
         try {
             final Drug drug = new Drug( form );
 
-            // Make sure code does not conflict with existing drugs
+            // Make sure code does not conflict with existing drugs ((no
+            // ideatical codes))
             if ( service.existsByCode( drug.getCode() ) ) {
+                // log creation attempt
                 loggerUtil.log( TransactionType.DRUG_CREATE, LoggerUtil.currentUser(),
                         "Conflict: drug with code " + drug.getCode() + " already exists" );
                 return new ResponseEntity( errorResponse( "Drug with code " + drug.getCode() + " already exists" ),
                         HttpStatus.CONFLICT );
             }
-
+            // save drug
             service.save( drug );
+            // log creation attempt
             loggerUtil.log( TransactionType.DRUG_CREATE, LoggerUtil.currentUser(),
                     "Drug " + drug.getCode() + " created" );
             return new ResponseEntity( drug, HttpStatus.OK );
         }
         catch ( final Exception e ) {
+            // exception handling, any errors occur? return badrequest response!
             loggerUtil.log( TransactionType.DRUG_CREATE, LoggerUtil.currentUser(), "Failed to create drug" );
             return new ResponseEntity( errorResponse( "Could not add drug: " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );
@@ -88,6 +92,7 @@ public class APIDrugController extends APIController {
         try {
             // Check for existing drug in database
             final Drug savedDrug = service.findById( form.getId() );
+            // not found? return error!
             if ( savedDrug == null ) {
                 return new ResponseEntity( errorResponse( "No drug found with code " + form.getCode() ),
                         HttpStatus.NOT_FOUND );
@@ -127,18 +132,23 @@ public class APIDrugController extends APIController {
     @DeleteMapping ( BASE_PATH + "/drugs/{id}" )
     public ResponseEntity deleteDrug ( @PathVariable final String id ) {
         try {
+            // try to find Drug object with the given ID
             final Drug drug = service.findById( Long.parseLong( id ) );
             if ( drug == null ) {
+                // log FAILED drug delete attempt
                 loggerUtil.log( TransactionType.DRUG_DELETE, LoggerUtil.currentUser(),
                         "Could not find drug with id " + id );
                 return new ResponseEntity( errorResponse( "No drug found with id " + id ), HttpStatus.NOT_FOUND );
             }
+            // delete the drug object from service
             service.delete( drug );
+            // log SUCCESSFUL drug deletion
             loggerUtil.log( TransactionType.DRUG_DELETE, LoggerUtil.currentUser(),
                     "Deleted drug with id " + drug.getId() );
             return new ResponseEntity( id, HttpStatus.OK );
         }
         catch ( final Exception e ) {
+            // log FAILED drug delete attempt
             loggerUtil.log( TransactionType.DRUG_DELETE, LoggerUtil.currentUser(), "Failed to delete drug" );
             return new ResponseEntity( errorResponse( "Could not delete drug: " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );
@@ -152,6 +162,7 @@ public class APIDrugController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/drugs" )
     public List<Drug> getDrugs () {
+        // log view event
         loggerUtil.log( TransactionType.DRUG_VIEW, LoggerUtil.currentUser(), "Fetched list of drugs" );
         return service.findAll();
     }

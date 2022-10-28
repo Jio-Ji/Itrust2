@@ -48,6 +48,7 @@ public class APIICDCodeController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/icdcodes" )
     public List<ICDCode> getCodes () {
+        // log event & retrieve all saved ICDCode entities
         loggerUtil.log( TransactionType.ICD_VIEW_ALL, LoggerUtil.currentUser(), "Fetched icd codes" );
         return service.findAll();
     }
@@ -62,14 +63,19 @@ public class APIICDCodeController extends APIController {
     @GetMapping ( BASE_PATH + "/icdcode/{id}" )
     public ResponseEntity getCode ( @PathVariable ( "id" ) final Long id ) {
         try {
+            // look for code with given ID
             final ICDCode code = service.findById( id );
             if ( code == null ) {
+                // code not found? return ResponseEntity saying so
                 return new ResponseEntity( errorResponse( "No code with id " + id ), HttpStatus.NOT_FOUND );
             }
+            // found or not, a view event needs to be logged
             loggerUtil.log( TransactionType.ICD_VIEW, LoggerUtil.currentUser(), "Fetched icd code with id " + id );
+            // return success response
             return new ResponseEntity( code, HttpStatus.OK );
         }
         catch ( final Exception e ) {
+            // any errors default to bad request response being returned
             return new ResponseEntity(
                     errorResponse( "Could not retrieve ICD Code " + id + " because of " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );

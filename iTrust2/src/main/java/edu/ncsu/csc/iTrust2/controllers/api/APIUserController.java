@@ -284,6 +284,7 @@ public class APIUserController extends APIController {
      * @return true if the user has `role`, false otherwise.
      */
     protected boolean hasRole ( final String role ) {
+        // TODO: figure out how this is used by @PreAuthorize!!!!!
         // get security context from thread local
         final SecurityContext context = SecurityContextHolder.getContext();
         if ( context == null ) {

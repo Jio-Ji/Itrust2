@@ -87,13 +87,16 @@ public class APIPersonnelController extends APIController {
     @GetMapping ( BASE_PATH + "/curPersonnel" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ADMIN')" )
     public ResponseEntity getCurrentPersonnel () {
+        // get currentUser, find their corresponding entity in Personnel Service
         final String username = LoggerUtil.currentUser();
         final Personnel personnel = (Personnel) service.findByName( username );
+        // not found? return NOT FOUND Response Entity
         if ( personnel == null ) {
             return new ResponseEntity( errorResponse( "Could not find a personnel entry for you, " + username ),
                     HttpStatus.NOT_FOUND );
         }
         else {
+            // found? log proper view event and return OK status responseEntity
             loggerUtil.log( TransactionType.VIEW_DEMOGRAPHICS, username,
                     "Retrieved demographics for user " + username );
             return new ResponseEntity( personnel, HttpStatus.OK );

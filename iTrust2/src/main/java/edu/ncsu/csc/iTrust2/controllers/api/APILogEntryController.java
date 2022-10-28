@@ -63,6 +63,7 @@ public class APILogEntryController extends APIController {
      */
     @PostMapping ( BASE_PATH + "/logentries/range" )
     public ResponseEntity getEntryByDateRange ( @RequestBody final LogEntryRequestBody body ) {
+        // TODO: FIGURE THIS THE FUCK OUT -DHRUV
         // If no dates are specified, get all entries, otherwise use the date
         // range
         List<LogEntry> entries = null;

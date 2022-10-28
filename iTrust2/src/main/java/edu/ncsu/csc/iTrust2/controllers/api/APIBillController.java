@@ -66,8 +66,11 @@ public class APIBillController extends APIController {
     @GetMapping ( BASE_PATH + "/bills/{username}" )
     @PreAuthorize ( "hasAnyRole('ROLE_BSM')" )
     public List<Bill> getBills ( @PathVariable final String username ) {
+        // get the patient with the current name then pass that to bill service
         final User patient = userService.findByName( username );
+        // event log
         loggerUtil.log( TransactionType.BILLS_VIEWED, username );
+        // return bills associated w retrieved patient
         return billService.findByPatient( patient );
     }
 
@@ -100,20 +103,29 @@ public class APIBillController extends APIController {
     @PreAuthorize ( "hasAnyRole('ROLE_BSM')" )
     public ResponseEntity editBills ( @PathVariable final Long id, @RequestBody final PaymentForm pay ) {
         try {
+            // look for the Bill w/ given ID
             final Bill b = billService.findById( id );
+            // attempt to create a Payment object w/ given form
             final Payment p = new Payment( pay );
 
+            // save payment object
             paymentService.save( p );
-
+            // no bill found? return NOT FOUND
             if ( b == null ) {
                 return new ResponseEntity( errorResponse( "No Bill found" ), HttpStatus.NOT_FOUND );
             }
+            // bill found? update it with payment information
             b.updateBill( p );
+            // save it
             billService.save( b );
+            // log BILL PAY event
+            // TODO is this the best logging label?
             loggerUtil.log( TransactionType.BILL_PAID, LoggerUtil.currentUser() );
             return new ResponseEntity( b, HttpStatus.OK );
         }
         catch ( final Exception e ) {
+            // return BAD REQUEST response for any other errors that occur
+            // TODO: remove print? where does it go
             e.printStackTrace();
             return new ResponseEntity(
                     errorResponse( "Could not validate or save the Bill provided due to " + e.getMessage() ),
@@ -135,14 +147,18 @@ public class APIBillController extends APIController {
     @PostMapping ( BASE_PATH + "bills/ov" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP')" )
     public ResponseEntity createBillOfficeVisit ( @RequestBody final OfficeVisitForm form ) {
+        // set the HCP of the OfficeVisitForm to the current user, create a bill
+        // associated with the form, then save it
         try {
             form.setHcp( LoggerUtil.currentUser() );
             final Bill b = billService.build( form );
 
             billService.save( b );
+            // log bill creation event
             loggerUtil.log( TransactionType.BILL_CREATED_OV, LoggerUtil.currentUser() );
             return new ResponseEntity( b, HttpStatus.OK );
         }
+        // any errors? return bad request.
         catch ( final Exception e ) {
             e.printStackTrace();
             return new ResponseEntity(
@@ -165,13 +181,20 @@ public class APIBillController extends APIController {
     @PostMapping ( BASE_PATH + "bills/vv" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_VACCINATOR')" )
     public ResponseEntity createBillVaccineVisit ( @RequestBody final VaccineVisitForm form ) {
+        // set the vaccinator of the VaccineVisitForm to the current user,
+        // create a bill
+        // associated with the form, then save it
         try {
+            // set form vaccinator
             form.setVaccinator( LoggerUtil.currentUser() );
             final Bill b = billService.build( form );
+            // save instance
             billService.save( b );
+            // log bill creation!
             loggerUtil.log( TransactionType.BILL_CREATED_VV, LoggerUtil.currentUser() );
             return new ResponseEntity( b, HttpStatus.OK );
         }
+        // any errors result in a bad request response
         catch ( final Exception e ) {
             e.printStackTrace();
             return new ResponseEntity(

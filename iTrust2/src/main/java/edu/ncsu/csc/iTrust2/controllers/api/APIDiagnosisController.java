@@ -61,9 +61,11 @@ public class APIDiagnosisController extends APIController {
     @GetMapping ( BASE_PATH + "/diagnosis/{id}" )
     public ResponseEntity getDiagnosis ( @PathVariable ( "id" ) final Long id ) {
         final Diagnosis d = diagnosisService.findById( id );
-
+        // log diagnosis view event
         loggerUtil.log( TransactionType.DIAGNOSIS_VIEW_BY_ID, LoggerUtil.currentUser(),
                 "Retrieved diagnosis with id " + id );
+        // diagnosis with given id not found? return NOT FOUND status. else
+        // return the diagnosis + OK Status
         return null == d
                 ? new ResponseEntity( errorResponse( "No Diagnosis found for id " + id ), HttpStatus.NOT_FOUND )
                 : new ResponseEntity( d, HttpStatus.OK );
@@ -96,11 +98,15 @@ public class APIDiagnosisController extends APIController {
      * @return List of Diagnoses for the patient
      */
     @GetMapping ( BASE_PATH + "/diagnoses" )
+    // TODO: change this method name from getDiagnosis to getDiagnosEs?
     public List<DiagnosisListForm> getDiagnosis () {
         final User self = userService.findByName( LoggerUtil.currentUser() );
+        // current user doesnt exist? (TODO: is this possible?) ...return null!
+        // cant have associated diagnoses
         if ( self == null ) {
             return null;
         }
+        // log VIEW ALL event
         loggerUtil.log( TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL, self.getUsername(),
                 self.getUsername() + " viewed their diagnoses" );
 

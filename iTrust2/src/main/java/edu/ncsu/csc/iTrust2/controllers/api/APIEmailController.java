@@ -31,6 +31,8 @@ public class APIEmailController extends APIController {
      */
     @GetMapping ( BASE_PATH + "emails" )
     public List<Email> getEmails () {
+        // TODO: log this?? behavior varies for this type of action across apis
+        // for different classes..
         return service.findAll();
     }
 
