@@ -1,11 +1,13 @@
 package edu.ncsu.csc.iTrust2.forms;
 
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.hibernate.mapping.List;
 import org.hibernate.validator.constraints.Length;
 
 import edu.ncsu.csc.iTrust2.models.Patient;
@@ -125,6 +127,12 @@ public class PatientForm {
     private int     mealLimit;
 
     /**
+     * Patient Advocates associated with the Patient
+     */
+    @OneToMany
+    private List    patientAdvocates;
+
+    /**
      * Populate the patient form from a patient object
      *
      * @param patient
@@ -177,6 +185,9 @@ public class PatientForm {
         }
         if ( null != patient.getDoses() ) {
             setDoses( patient.getDoses() );
+        }
+        if ( null != patient.getPatientAdvocates() ) {
+            setPatientAdvocates( patient.getPatientAdvocates() );
         }
     }
 
@@ -558,6 +569,25 @@ public class PatientForm {
      */
     public void setUsername ( final String username ) {
         this.username = username;
+    }
+
+    /**
+     * Gets the patient's Patient Advocates
+     *
+     * @return List
+     */
+    public List getPatientAdvocates () {
+        return patientAdvocates;
+    }
+
+    /**
+     * Sets the patient's Patient Advocates
+     *
+     * @param patientAdvocates
+     *            New List of Patient Advocates
+     */
+    public void setPatientAdvocates ( final List patientAdvocates ) {
+        this.patientAdvocates = patientAdvocates;
     }
 
 }

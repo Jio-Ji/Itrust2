@@ -8,7 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
+import org.hibernate.mapping.List;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
@@ -149,6 +151,12 @@ public class Patient extends User {
     private VaccinationStatus status;
 
     /**
+     * Patient Advocates associated with the Patient
+     */
+    @OneToMany
+    private List              patientAdvocates;
+
+    /**
      * For Hibernate
      */
     public Patient () {
@@ -203,6 +211,8 @@ public class Patient extends User {
         setGender( Gender.parse( form.getGender() ) );
 
         setDoses( form.getDoses() );
+
+        setPatientAdvocates( form.getPatientAdvocates() );
 
         return this;
     }
@@ -570,6 +580,25 @@ public class Patient extends User {
      */
     public void setGender ( final Gender gender ) {
         this.gender = gender;
+    }
+
+    /**
+     * Gets the patient's Patient Advocates
+     *
+     * @return List
+     */
+    public List getPatientAdvocates () {
+        return patientAdvocates;
+    }
+
+    /**
+     * Sets the patient's Patient Advocates
+     *
+     * @param patientAdvocates
+     *            New List of Patient Advocates
+     */
+    public void setPatientAdvocates ( final List patientAdvocates ) {
+        this.patientAdvocates = patientAdvocates;
     }
 
 }
