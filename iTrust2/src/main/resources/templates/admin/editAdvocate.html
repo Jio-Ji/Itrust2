@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="layout :: head(title=~{::title},links=~{})">
-<title>Manage Users</title>
+<title>Edit Patient Advocates</title>
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
 	<div th:fragment="content">
@@ -13,11 +13,6 @@
 				var checkValidUserForm = function(user) {
 					var err = [];
 				
-					for(var i = 0; i < $scope.users.length; i++ ) {
-						if( $scope.user.username === $scope.users[i].username) {
-						    err.push("Username already exists");
-						}
-					}
 	       	        if( $scope.user.password === $scope.user.password2) {
 					    // do nothing
 					} else {
@@ -31,7 +26,7 @@
 			
 		    $scope.users = [];
 	        $scope.loadUsers = function () {
-	          $http.get("/iTrust2/api/v1/users").then(
+	          $http.get("/iTrust2/api/v1/pas").then(
 	            function (response) {
 	              $scope.users = response.data;
 	              $scope.message = "";
@@ -41,7 +36,7 @@
 	            });
 	        }
 	        
-	        $scope.addUser = function () {
+	        $scope.updateUser = function () {
 	        	
 	        	let roles = [];
 	        	
@@ -57,15 +52,28 @@
 		            $scope.errorAdding = err;
 		            $scope.successMessage = "";
 		          } else {
-		            $http.post("/iTrust2/api/v1/users", $scope.user).then(
+		            $http.put("/iTrust2/api/v1/pas/" + $scope.user.username, $scope.user).then(
 		              function (response) {
 		            	    $scope.loadUsers();
 		                $scope.user.username = "";
 		                $scope.user.password = "";
 		                $scope.user.password2 = "";
-		                $scope.user.enabled = false;
-		                $scope.user.role = "ROLE_PATIENT";
-		                angular.element(document.getElementById('ROLE_HCP'))[0].disabled = false;
+		                $scope.user.firstName = "";
+		                $scope.user.middleName = "";
+		                $scope.user.lastName = "";
+		                $scope.user.preferredName = "";
+		                $scope.user.email = "";
+		                $scope.user.phone = "";
+		                $scope.user.address1 = "";
+		                $scope.user.address2 = "";
+		                $scope.user.city = "";
+		                $scope.user.state = "";
+		                $scope.user.zip = "";
+		                $scope.user.prescription = false;
+		                $scope.user.billing = false;
+		                $scope.user.officeVisit = false;
+		                
+		                
 		                $scope.errorAdding = "";
 		                $scope.successMessage = "User added successfully.";
 		              }, function (rejection) {
@@ -76,13 +84,12 @@
 		          }
 	        }
 			
-	        $scope.deleteUser = function(user) {
-	            $http.delete('/iTrust2/api/v1/users/' + user.username).then(
+	        $scope.editUser = function(user) {
+	            $http.get('/iTrust2/api/v1/users/' + user.username).then(
 	              function (response) {
-	                $scope.loadUsers();
+	                $scope.user = response.data;
 	              }, function (rejection) {
-	            	    $scope.loadUsers();
-	                $scope.message = "Could not remove user";
+	                $scope.message = "Could not edit user";
 	              });
 	          }
 	        
@@ -116,15 +123,7 @@
 	        	    "ROLE_PA",
 	        ];
         	
-        	$scope.selectHCP = function(role) {
-        		if(role === "ROLE_OPH" && $scope.user.roles["ROLE_OPH"] ) {
-        			$scope.user.roles["ROLE_HCP"] = true;
-        			angular.element(document.getElementById('ROLE_HCP'))[0].disabled = true;
-        		} 
-        		if(role === "ROLE_OPH" && !$scope.user.roles["ROLE_OPH"] ) {
-        			angular.element(document.getElementById('ROLE_HCP'))[0].disabled = false;
-        		} 
-        	}
+
         	
 	        
 	        $scope.getRole = function(user) {
@@ -141,7 +140,7 @@
 					<div class="col-md-12">
 						<div class="panel panel-primary">
 							<div class="panel-heading">
-								<h3>Admin Manage Users</h3>
+								<h3>Edit Patient Advocates</h3>
 							</div>
 							<div class="panel-body">
 								<table class="table table-bordered">
@@ -151,7 +150,7 @@
 											<th>Username</th>
 											<th>Role(s)</th>
 											<th>Enabled</th>
-											<th>Delete User</th>
+											<th>Edit User</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -168,7 +167,7 @@
                 <td> 
                   <div class="row text-center">
                     <div class="col-md-6">
-                      <input type="button" value="Delete" class="btn btn-danger" name="deleteUser" ng-click="deleteUser(u)"/>                          
+                      <input type="button" value="Edit" class="btn btn-danger" name="editUser" ng-click="editUser(u)"/>                          
                     </div>
                   </div>
                 </td>
@@ -218,24 +217,44 @@ input[type=password] {
 										<div class="panel panel-default">
 											<div class="panel-heading ">Add a User</div>
 											<div class="panel-body">
-												<form name="addUserForm"
-													ng-submit="addUser(addUserForm.$valid)">
+												<form name="updateUserForm"
+													ng-submit="updateUser(updateUserForm.$valid)">
 													<b>Username:</b> <input type="text" name="username"
 														id="username" ng-model="user.username" /> <br> <br>
 													<b>Password:</b> <input type="password" name="password"
 														id="password" ng-model="user.password" /> <br> <br>
 													<b>Password (again):</b> <input type="password"
-														name="password2" id="password2" ng-model="user.password2" />
-													<br> <br> <b>Role:</b>
+														name="password2" id="password2" ng-model="user.password2" /> <br> <br> 
+													<b>First name:</b> <input type="text" name="firstName"
+														id="firstName" ng-model="user.firstName" /> <br> <br>
+													<b>Middle name:</b> <input type="text" name="middletName"
+														id="middleName" ng-model="user.middleName" /> <br> <br>
+													<b>Last name:</b> <input type="text" name="lastName"
+														id="lastName" ng-model="user.lastName" /> <br> <br>
+													<b>Preferred name:</b> <input type="text" name="preferredName"
+														id="preferredName" ng-model="user.preferredName" /> <br> <br>
+													<b>Street Address 1:</b> <input type="text" name="street"
+														id="street" ng-model="user.street" /> <br> <br>
+													<b>Street Address 2:</b> <input type="text" name="street2"
+														id="street2" ng-model="user.street2" /> <br> <br>
+													<b>City:</b> <input type="text" name="city"
+														id="city" ng-model="user.city" /> <br> <br>
+													<b>State:</b> <input type="text" name="state"
+														id="state" ng-model="user.state" /> <br> <br>
+													<b>Zipcode:</b> <input type="text" name="zip"
+														id="zip" ng-model="user.zip" /> <br> <br>
+													<b>Phone number:</b> <input type="text" name="phone"
+														id="phone" ng-model="user.phone" /> <br> <br>
+													<b>Email:</b> <input type="text" name="email"
+														id="email" ng-model="user.email" /> <br> <br>
+													<b>Prescriptions:</b> <input type="checkbox"
+														name="prescription" class="checkbox" ng-model="user.prescription" />
+													<b>Billing:</b> <input type="checkbox"
+														name="billing" class="checkbox" ng-model="user.billing" />
+													<b>Office Visits:</b> <input type="checkbox"
+														name="office" class="checkbox" ng-model="user.office" />
 
-													<div ng-repeat="role in roles track by $index">
-														<input type="checkbox" id="{{role}}" ng-model="$parent.user.roles[role]" ng-change="selectHCP(role)" ><i>
-															{{role}}</i></input>
-													</div>
-
-													<br> <br> <b>Enabled?:</b> <input type="checkbox"
-														name="enabled" class="checkbox" ng-model="user.enabled" />
-													<br> <input type="submit" id="submit" value="Add User" />
+													<br> <input type="submit" id="submit" value="Update User" />
 												</form>
 												<div>
 													<p style="color: red" ng-model="errorAdding" id="error">{{errorAdding}}</p>

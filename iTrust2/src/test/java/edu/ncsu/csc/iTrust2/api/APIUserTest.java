@@ -21,7 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import edu.ncsu.csc.iTrust2.common.TestUtils;
+import edu.ncsu.csc.iTrust2.forms.PatientAdvocateForm;
 import edu.ncsu.csc.iTrust2.forms.UserForm;
+import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 import edu.ncsu.csc.iTrust2.models.Personnel;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
@@ -180,6 +182,37 @@ public class APIUserTest {
         final User retrieved = service.findByName( USER_1 );
 
         Assertions.assertEquals( 3, retrieved.getRoles().size(), "Updating a user should give them additional Roles" );
+
+    }
+
+    /**
+     * Tests updating pa
+     *
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    @WithMockUser ( username = "admin", roles = { "ADMIN" } )
+    public void testUpdatePas () throws Exception {
+
+        final UserForm uf = new UserForm( USER_1, PW, Role.ROLE_PA, 1 );
+
+        final PatientAdvocate u1 = new PatientAdvocate( uf );
+
+        service.save( u1 );
+
+        Assertions.assertEquals( u1.getUsername(), service.findByName( USER_1 ).getUsername() );
+
+        final PatientAdvocateForm pf = new PatientAdvocateForm( u1 );
+        pf.setAddress1( "54621" );
+
+        mvc.perform( MockMvcRequestBuilders.put( "/api/v1/pas/" + pf.getUsername() ).with( csrf() )
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( pf ) ) )
+                .andExpect( MockMvcResultMatchers.status().isOk() );
+
+        final User retrieved = service.findByName( USER_1 );
+
+        Assertions.assertEquals( USER_1, retrieved.getId(), "Updating a user should give them additional Roles" );
 
     }
 

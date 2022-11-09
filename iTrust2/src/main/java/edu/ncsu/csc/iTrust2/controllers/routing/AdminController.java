@@ -107,4 +107,17 @@ public class AdminController {
     public String surveys ( final Model model ) {
         return "/admin/surveys";
     }
+
+    /**
+     * Edit the advocates
+     *
+     * @param model
+     *            data for front end
+     * @return mapping
+     */
+    @RequestMapping ( value = "admin/editAdvocate" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public String editAdvocate ( final Model model ) {
+        return "/admin/editAdvocate";
+    }
 }

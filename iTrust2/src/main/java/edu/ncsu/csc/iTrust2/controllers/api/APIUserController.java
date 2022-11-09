@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.iTrust2.forms.PatientAdvocateForm;
 import edu.ncsu.csc.iTrust2.forms.UserForm;
 import edu.ncsu.csc.iTrust2.models.Patient;
+import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 import edu.ncsu.csc.iTrust2.models.Personnel;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
@@ -71,9 +73,12 @@ public class APIUserController extends APIController {
     /** Constant for bsm role */
     private static final String       ROLE_BSM        = "ROLE_BSM";
 
+    /** Constant for pa role */
+    private static final String       ROLE_PA         = "ROLE_PA";
+
     /** All roles */
     private static final List<String> ALL_ROLES       = List.of( ROLE_ADMIN, ROLE_PATIENT, ROLE_HCP, ROLE_ER,
-            ROLE_LABTECH, ROLE_VIROLOGIST, ROLE_OD, ROLE_OPH, ROLE_VACCINATOR, ROLE_BSM );
+            ROLE_LABTECH, ROLE_VIROLOGIST, ROLE_OD, ROLE_OPH, ROLE_VACCINATOR, ROLE_BSM, ROLE_PA );
 
     /** LoggerUtil */
     @Autowired
@@ -94,6 +99,24 @@ public class APIUserController extends APIController {
     public List<User> getUsers () {
         loggerUtil.log( TransactionType.VIEW_USERS, LoggerUtil.currentUser() );
         return userService.findAll();
+    }
+
+    /**
+     * Return all the patient advocates
+     *
+     * @return list of patient advocates
+     */
+    @GetMapping ( BASE_PATH + "/pas" )
+    public List<User> getPas () {
+        loggerUtil.log( TransactionType.VIEW_USERS, LoggerUtil.currentUser() );
+        final List<User> temp = userService.findAll();
+        for ( int i = 0; i < temp.size(); i++ ) {
+            if ( !temp.get( i ).getRoles().contains( Role.ROLE_PA ) ) {
+                temp.remove( i );
+                i--;
+            }
+        }
+        return temp;
     }
 
     /**
@@ -129,7 +152,10 @@ public class APIUserController extends APIController {
         final List<Role> rolesOnUser = userF.getRoles().stream().map( Role::valueOf ).collect( Collectors.toList() );
 
         try {
-            if ( rolesOnUser.contains( Role.ROLE_PATIENT ) ) {
+            if ( rolesOnUser.contains( Role.ROLE_PA ) ) {
+                user = new PatientAdvocate( userF );
+            }
+            else if ( rolesOnUser.contains( Role.ROLE_PATIENT ) ) {
                 user = new Patient( userF );
             }
 
@@ -172,6 +198,44 @@ public class APIUserController extends APIController {
             else {
                 user = new Personnel( userF );
             }
+
+            if ( null != user.getId() && !id.equals( user.getId() ) ) {
+                return new ResponseEntity(
+                        errorResponse( "The ID provided does not match the ID of the User provided" ),
+                        HttpStatus.CONFLICT );
+            }
+            final User dbUser = userService.findByName( id );
+            if ( null == dbUser ) {
+                return new ResponseEntity( errorResponse( "No user found for id " + id ), HttpStatus.NOT_FOUND );
+            }
+
+            userService.save( user ); /* Will overwrite existing user */
+            loggerUtil.log( TransactionType.UPDATE_USER, LoggerUtil.currentUser() );
+            return new ResponseEntity( user, HttpStatus.OK );
+        }
+
+        catch ( final Exception e ) {
+            return new ResponseEntity( errorResponse( "Could not update " + id + " because of " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * Updates the User with the id provided by overwriting it with the new User
+     * record that is provided. If the ID provided does not match the ID set in
+     * the User provided, the update will not take place
+     *
+     * @param id
+     *            The ID of the User to be updated
+     * @param userF
+     *            The updated User to save in place of the existing one
+     * @return response
+     */
+    @PutMapping ( BASE_PATH + "/pas/{id}" )
+    public ResponseEntity updatePa ( @PathVariable final String id, @RequestBody final PatientAdvocateForm userF ) {
+        PatientAdvocate user = null;
+        try {
+            user = new PatientAdvocate( userF );
 
             if ( null != user.getId() && !id.equals( user.getId() ) ) {
                 return new ResponseEntity(
