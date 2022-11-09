@@ -181,7 +181,8 @@ public class User extends DomainObject {
     /**
      * Set the roles of this user. Throws an exception if the Set of roles
      * provided contains either a Patient or Admin role, and that role is not
-     * the only one present
+     * the only one present. Throws an exception if the Set of roles contains a
+     * Patient Advocate and any other role that is considered an HCP.
      *
      * @param roles
      *            the roles to set this user to
@@ -194,6 +195,11 @@ public class User extends DomainObject {
             throw new IllegalArgumentException(
                     "Tried to create a Patient, Admin, or BSM user with a secondary role.  Patient, admin, and BSM can only have a single role!" );
         }
+        if ( roles.contains( Role.ROLE_PA ) && ( roles.contains( Role.ROLE_HCP ) || roles.contains( Role.ROLE_OD )
+                || roles.contains( Role.ROLE_OPH ) || roles.contains( Role.ROLE_VIROLOGIST ) ) ) {
+            throw new IllegalArgumentException(
+                    "Tried to create a Patient Advocate user with a secondary HCP role. Patient Advocates must be hospital staff who are not HCPs!" );
+        }
         if ( roles.size() == 0 ) {
             throw new IllegalArgumentException(
                     "Tries to create a user with no roles. Users must have at least one role." );
@@ -205,7 +211,8 @@ public class User extends DomainObject {
     /**
      * Adds a new Role to this user. Throws an exception when trying to add
      * roles to a patient/admin, or add patient/admin roles to anyone with any
-     * existing role(s).
+     * existing role(s). Throws an exception when trying to add roles that are
+     * considered HCPs to a Patient Advocate.
      *
      * @param role
      *            the Role to add
@@ -219,6 +226,15 @@ public class User extends DomainObject {
         }
         if ( this.roles.contains( Role.ROLE_ADMIN ) || this.roles.contains( Role.ROLE_PATIENT ) ) {
             throw new IllegalArgumentException( "Admins and Patients cannot have additional roles added" );
+        }
+        if ( this.roles.contains( Role.ROLE_PA ) && ( role.equals( Role.ROLE_HCP ) || role.equals( Role.ROLE_OD )
+                || role.equals( Role.ROLE_OPH ) || role.equals( Role.ROLE_VIROLOGIST ) ) ) {
+            throw new IllegalArgumentException( "Patient Advocates cannot have HCP roles added" );
+        }
+        if ( role.equals( Role.ROLE_PA )
+                && ( this.roles.contains( Role.ROLE_HCP ) || this.roles.contains( Role.ROLE_OD )
+                        || this.roles.contains( Role.ROLE_OPH ) || this.roles.contains( Role.ROLE_VIROLOGIST ) ) ) {
+            throw new IllegalArgumentException( "HCPs cannot be Patient Advocates" );
         }
         this.roles.add( role );
     }
