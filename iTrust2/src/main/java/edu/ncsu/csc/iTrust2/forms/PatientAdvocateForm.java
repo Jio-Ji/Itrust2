@@ -1,11 +1,13 @@
 package edu.ncsu.csc.iTrust2.forms;
 
+import java.util.List;
+
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.mapping.List;
 import org.hibernate.validator.constraints.Length;
 
+import edu.ncsu.csc.iTrust2.models.Patient;
 import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 
 /**
@@ -24,57 +26,57 @@ public class PatientAdvocateForm {
 
     /** Username of this Patient **/
     @Length ( max = 20 )
-    private String username;
+    private String        username;
 
     /** The first name of the patient **/
     @Length ( max = 20 )
-    private String firstName;
+    private String        firstName;
 
     /** The middle name of the patient **/
     @Length ( max = 20 )
-    private String middleName;
+    private String        middleName;
 
     /** The last name of the patient **/
     @Length ( max = 30 )
-    private String lastName;
+    private String        lastName;
 
     /** The preferred name of the patient **/
     @Length ( max = 20 )
-    private String preferredName;
+    private String        preferredName;
 
     /** The email of the patient **/
     @Length ( max = 30 )
-    private String email;
+    private String        email;
 
     /** The phone number of the patient **/
     @Pattern ( regexp = "(^[0-9]{3}-[0-9]{3}-[0-9]{4}$)", message = "Phone number must be formatted as xxx-xxx-xxxx" )
-    private String phone;
+    private String        phone;
 
     /** The address line 1 of the patient **/
     @Length ( max = 50 )
-    private String address1;
+    private String        address1;
 
     /** The address line 2 of the patient **/
     @Length ( max = 50 )
-    private String address2;
+    private String        address2;
 
     /** The city of residence of the patient **/
     @Length ( max = 15 )
-    private String city;
+    private String        city;
 
     /** The state of residence of the patient **/
     @Length ( min = 2, max = 2 )
-    private String state;
+    private String        state;
 
     /** The zipcode of the patient **/
     @Length ( min = 5, max = 10 )
-    private String zip;
+    private String        zip;
 
     /**
      * Patients associated with the Patient Advocates
      */
     @OneToMany
-    private List   patients;
+    private List<Patient> patients;
 
     /**
      * Populate the patient form from a patient object

@@ -1,11 +1,12 @@
 package edu.ncsu.csc.iTrust2.models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 
-import org.hibernate.mapping.List;
 import org.hibernate.validator.constraints.Length;
 
 import edu.ncsu.csc.iTrust2.forms.PatientAdvocateForm;
@@ -27,73 +28,73 @@ public class PatientAdvocate extends User {
      * The first name of this patient advocate
      */
     @Length ( min = 1 )
-    private String firstName;
+    private String        firstName;
 
     /**
      * The middle name of this patient advocate
      */
     @Length ( min = 1 )
-    private String middleName;
+    private String        middleName;
 
     /**
      * The last name of this patient advocate
      */
     @Length ( min = 1 )
-    private String lastName;
+    private String        lastName;
 
     /**
      * The preferred name of this patient advocate
      */
     @Length ( max = 20 )
-    private String preferredName;
+    private String        preferredName;
 
     /**
      * The email address of this patient advocate
      */
     @Length ( max = 30 )
-    private String email;
+    private String        email;
 
     /**
      * The phone number of this patient advocate
      */
     @Length ( min = 12, max = 12 )
-    private String phone;
+    private String        phone;
 
     /**
      * The address line 1 of this patient advocate
      */
     @Length ( max = 50 )
-    private String address1;
+    private String        address1;
 
     /**
      * The address line 2 of this patient advocate
      */
     @Length ( max = 50 )
-    private String address2;
+    private String        address2;
 
     /**
      * The city of residence of this patient advocate
      */
     @Length ( max = 15 )
-    private String city;
+    private String        city;
 
     /**
      * The state of residence of this patient advocate
      */
     @Enumerated ( EnumType.STRING )
-    private State  state;
+    private State         state;
 
     /**
      * The zip code of this patient advocate
      */
     @Length ( min = 5, max = 10 )
-    private String zip;
+    private String        zip;
 
     /**
      * Patients associated with the Patient Advocate
      */
     @OneToMany
-    private List   patients;
+    private List<Patient> patients;
 
     /**
      * For Hibernate

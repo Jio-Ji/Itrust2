@@ -1,5 +1,7 @@
 package edu.ncsu.csc.iTrust2.forms;
 
+import java.util.List;
+
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -7,10 +9,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.mapping.List;
 import org.hibernate.validator.constraints.Length;
 
 import edu.ncsu.csc.iTrust2.models.Patient;
+import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 
 /**
  * Form for user to fill out to add a Patient to the system.
@@ -576,7 +578,7 @@ public class PatientForm {
      *
      * @return List
      */
-    public List getPatientAdvocates () {
+    public List<PatientAdvocate> getPatientAdvocates () {
         return patientAdvocates;
     }
 
@@ -586,7 +588,7 @@ public class PatientForm {
      * @param patientAdvocates
      *            New List of Patient Advocates
      */
-    public void setPatientAdvocates ( final List patientAdvocates ) {
+    public void setPatientAdvocates ( final List<PatientAdvocate> patientAdvocates ) {
         this.patientAdvocates = patientAdvocates;
     }
 
