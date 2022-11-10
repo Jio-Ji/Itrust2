@@ -79,6 +79,21 @@ public class PatientAdvocateForm {
     private List<Patient> patients;
 
     /**
+     * Whether or not the prescription is enabled
+     */
+    private boolean       prescription;
+
+    /**
+     * Whether or not the billing is enabled
+     */
+    private boolean       billing;
+
+    /**
+     * Whether or not the officeVisit is enabled
+     */
+    private boolean       officeVisit;
+
+    /**
      * Populate the patient form from a patient object
      *
      * @param patient
@@ -89,6 +104,7 @@ public class PatientAdvocateForm {
             return; /* Nothing to do here */
         }
         setFirstName( patientAdvocate.getFirstName() );
+        setMiddleName( patientAdvocate.getMiddleName() );
         setLastName( patientAdvocate.getLastName() );
         setPreferredName( patientAdvocate.getPreferredName() );
         setEmail( patientAdvocate.getEmail() );
@@ -104,6 +120,9 @@ public class PatientAdvocateForm {
         if ( null != patientAdvocate.getPatients() ) {
             setPatients( patientAdvocate.getPatients() );
         }
+        setPrescription( patientAdvocate.isPrescription() );
+        setBilling( patientAdvocate.isBilling() );
+        setOfficeVisit( patientAdvocate.isOfficeVisit() );
     }
 
     public String getUsername () {
@@ -202,12 +221,56 @@ public class PatientAdvocateForm {
         this.zip = zip;
     }
 
-    public List getPatients () {
+    public List<Patient> getPatients () {
         return patients;
     }
 
-    public void setPatients ( final List patients ) {
+    public void setPatients ( final List<Patient> patients ) {
         this.patients = patients;
     }
 
+    /**
+     * @return the prescription
+     */
+    public boolean isPrescription () {
+        return prescription;
+    }
+
+    /**
+     * @param prescription
+     *            the prescription to set
+     */
+    public void setPrescription ( final boolean prescription ) {
+        this.prescription = prescription;
+    }
+
+    /**
+     * @return the billing
+     */
+    public boolean isBilling () {
+        return billing;
+    }
+
+    /**
+     * @param billing
+     *            the billing to set
+     */
+    public void setBilling ( final boolean billing ) {
+        this.billing = billing;
+    }
+
+    /**
+     * @return the officeVisit
+     */
+    public boolean isOfficeVisit () {
+        return officeVisit;
+    }
+
+    /**
+     * @param officeVisit
+     *            the officeVisit to set
+     */
+    public void setOfficeVisit ( final boolean officeVisit ) {
+        this.officeVisit = officeVisit;
+    }
 }

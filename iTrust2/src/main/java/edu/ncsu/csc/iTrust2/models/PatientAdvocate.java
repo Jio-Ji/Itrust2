@@ -97,6 +97,21 @@ public class PatientAdvocate extends User {
     private List<Patient> patients;
 
     /**
+     * Whether or not the prescription is enabled
+     */
+    private boolean       prescription;
+
+    /**
+     * Whether or not the billing is enabled
+     */
+    private boolean       billing;
+
+    /**
+     * Whether or not the officeVisit is enabled
+     */
+    private boolean       officeVisit;
+
+    /**
      * For Hibernate
      */
     public PatientAdvocate () {
@@ -126,6 +141,7 @@ public class PatientAdvocate extends User {
      */
     public PatientAdvocate update ( final PatientAdvocateForm form ) {
         setFirstName( form.getFirstName() );
+        setMiddleName( form.getMiddleName() );
         setPreferredName( form.getPreferredName() );
         setLastName( form.getLastName() );
         setEmail( form.getEmail() );
@@ -137,7 +153,9 @@ public class PatientAdvocate extends User {
         setZip( form.getZip() );
 
         setPatients( form.getPatients() );
-
+        setPrescription( form.isPrescription() );
+        setBilling( form.isBilling() );
+        setOfficeVisit( form.isOfficeVisit() );
         return this;
     }
 
@@ -229,12 +247,57 @@ public class PatientAdvocate extends User {
         this.zip = zip;
     }
 
-    public List getPatients () {
+    public List<Patient> getPatients () {
         return patients;
     }
 
-    public void setPatients ( final List patients ) {
+    public void setPatients ( final List<Patient> patients ) {
         this.patients = patients;
+    }
+
+    /**
+     * @return the prescription
+     */
+    public boolean isPrescription () {
+        return prescription;
+    }
+
+    /**
+     * @param prescription
+     *            the prescription to set
+     */
+    public void setPrescription ( final boolean prescription ) {
+        this.prescription = prescription;
+    }
+
+    /**
+     * @return the billing
+     */
+    public boolean isBilling () {
+        return billing;
+    }
+
+    /**
+     * @param billing
+     *            the billing to set
+     */
+    public void setBilling ( final boolean billing ) {
+        this.billing = billing;
+    }
+
+    /**
+     * @return the officeVisit
+     */
+    public boolean isOfficeVisit () {
+        return officeVisit;
+    }
+
+    /**
+     * @param officeVisit
+     *            the officeVisit to set
+     */
+    public void setOfficeVisit ( final boolean officeVisit ) {
+        this.officeVisit = officeVisit;
     }
 
 }
