@@ -1,5 +1,8 @@
 package edu.ncsu.csc.iTrust2.forms;
 
+import java.util.List;
+
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -8,7 +11,10 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import edu.ncsu.csc.iTrust2.models.Patient;
+import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 
 /**
  * Form for user to fill out to add a Patient to the system.
@@ -28,101 +34,108 @@ public class PatientForm {
 
     /** Username of this Patient **/
     @Length ( max = 20 )
-    private String  username;
+    private String                username;
 
     /** The first name of the patient **/
     @Length ( max = 20 )
-    private String  firstName;
+    private String                firstName;
 
     /** The preferred name of the patient **/
     @Length ( max = 20 )
-    private String  preferredName;
+    private String                preferredName;
 
     /** The last name of the patient **/
     @Length ( max = 30 )
-    private String  lastName;
+    private String                lastName;
 
     /** The email of the patient **/
     @Length ( max = 30 )
-    private String  email;
+    private String                email;
 
     /** The address line 1 of the patient **/
     @Length ( max = 50 )
-    private String  address1;
+    private String                address1;
 
     /** The address line 2 of the patient **/
     @Length ( max = 50 )
-    private String  address2;
+    private String                address2;
 
     /** The city of residence of the patient **/
     @Length ( max = 15 )
-    private String  city;
+    private String                city;
 
     /** The state of residence of the patient **/
     @Length ( min = 2, max = 2 )
-    private String  state;
+    private String                state;
 
     /** The zipcode of the patient **/
     @Length ( min = 5, max = 10 )
-    private String  zip;
+    private String                zip;
 
     /** The phone number of the patient **/
     @Pattern ( regexp = "(^[0-9]{3}-[0-9]{3}-[0-9]{4}$)", message = "Phone number must be formatted as xxx-xxx-xxxx" )
-    private String  phone;
+    private String                phone;
 
     /** The date of birth of the patient **/
     @Length ( min = 10, max = 10 )
-    private String  dateOfBirth;
+    private String                dateOfBirth;
 
     /** The date of death of the patient **/
-    private String  dateOfDeath;
+    private String                dateOfDeath;
 
     /** The cause of death of the patient **/
     @Length ( max = 50 )
-    private String  causeOfDeath;
+    private String                causeOfDeath;
 
     /** The blood type of the patient **/
     @NotEmpty
-    private String  bloodType;
+    private String                bloodType;
 
     /** The ethnicity of the patient **/
     @NotEmpty
-    private String  ethnicity;
+    private String                ethnicity;
 
     /** The gender of the patient **/
     @NotEmpty
-    private String  gender;
+    private String                gender;
 
     /** The vaccination status of this patient */
     @NotEmpty
-    private String  status;
+    private String                status;
 
     /** The number of doses the patient has recieved **/
     @NotEmpty
     @Length ( max = 3 )
-    private String  doses;
+    private String                doses;
 
     /** The vaccine the patient received, if applicable */
-    private String  vaccine;
+    private String                vaccine;
     /**
      * Whether the patient is diabetic/pre-diabetic or not
      */
     @NotNull
-    private boolean isDiabetic;
+    private boolean               isDiabetic;
 
     /**
      * Blood sugar limit for fasting
      */
     @Min ( 80 )
     @Max ( 130 )
-    private int     fastingLimit;
+    private int                   fastingLimit;
 
     /**
      * Blood sugar limit for meals
      */
     @Min ( 120 )
     @Max ( 180 )
-    private int     mealLimit;
+    private int                   mealLimit;
+
+    /**
+     * Patient Advocates associated with the Patient
+     */
+    @ManyToMany
+    @JsonIgnore
+    private List<PatientAdvocate> patientAdvocates;
 
     /**
      * Populate the patient form from a patient object
@@ -177,6 +190,9 @@ public class PatientForm {
         }
         if ( null != patient.getDoses() ) {
             setDoses( patient.getDoses() );
+        }
+        if ( null != patient.getPatientAdvocates() ) {
+            setPatientAdvocates( patient.getPatientAdvocates() );
         }
     }
 
@@ -558,6 +574,25 @@ public class PatientForm {
      */
     public void setUsername ( final String username ) {
         this.username = username;
+    }
+
+    /**
+     * Gets the patient's Patient Advocates
+     *
+     * @return List
+     */
+    public List<PatientAdvocate> getPatientAdvocates () {
+        return patientAdvocates;
+    }
+
+    /**
+     * Sets the patient's Patient Advocates
+     *
+     * @param patientAdvocates
+     *            New List of Patient Advocates
+     */
+    public void setPatientAdvocates ( final List<PatientAdvocate> patientAdvocates ) {
+        this.patientAdvocates = patientAdvocates;
     }
 
 }

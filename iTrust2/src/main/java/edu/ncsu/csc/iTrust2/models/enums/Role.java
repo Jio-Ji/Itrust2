@@ -49,7 +49,11 @@ public enum Role {
     /**
      * Billing Staff Member
      */
-    ROLE_BSM ( 10, "bsm/index" );
+    ROLE_BSM ( 10, "bsm/index" ),
+    /**
+     * Patient Advocate
+     */
+    ROLE_PA ( 11, "pa/index" );
 
     /**
      * Numeric code of the Role

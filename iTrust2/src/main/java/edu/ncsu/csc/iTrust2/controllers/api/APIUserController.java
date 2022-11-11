@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.iTrust2.forms.UserForm;
 import edu.ncsu.csc.iTrust2.models.Patient;
+import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 import edu.ncsu.csc.iTrust2.models.Personnel;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
@@ -71,9 +72,12 @@ public class APIUserController extends APIController {
     /** Constant for bsm role */
     private static final String       ROLE_BSM        = "ROLE_BSM";
 
+    /** Constant for pa role */
+    private static final String       ROLE_PA         = "ROLE_PA";
+
     /** All roles */
     private static final List<String> ALL_ROLES       = List.of( ROLE_ADMIN, ROLE_PATIENT, ROLE_HCP, ROLE_ER,
-            ROLE_LABTECH, ROLE_VIROLOGIST, ROLE_OD, ROLE_OPH, ROLE_VACCINATOR, ROLE_BSM );
+            ROLE_LABTECH, ROLE_VIROLOGIST, ROLE_OD, ROLE_OPH, ROLE_VACCINATOR, ROLE_BSM, ROLE_PA );
 
     /** LoggerUtil */
     @Autowired
@@ -129,7 +133,10 @@ public class APIUserController extends APIController {
         final List<Role> rolesOnUser = userF.getRoles().stream().map( Role::valueOf ).collect( Collectors.toList() );
 
         try {
-            if ( rolesOnUser.contains( Role.ROLE_PATIENT ) ) {
+            if ( rolesOnUser.contains( Role.ROLE_PA ) ) {
+                user = new PatientAdvocate( userF );
+            }
+            else if ( rolesOnUser.contains( Role.ROLE_PATIENT ) ) {
                 user = new Patient( userF );
             }
 

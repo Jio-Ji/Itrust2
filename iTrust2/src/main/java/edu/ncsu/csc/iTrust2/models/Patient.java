@@ -1,17 +1,20 @@
 package edu.ncsu.csc.iTrust2.models;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.JsonAdapter;
 
 import edu.ncsu.csc.iTrust2.adapters.LocalDateAdapter;
@@ -38,68 +41,68 @@ public class Patient extends User {
      * The first name of this patient
      */
     @Length ( min = 1 )
-    private String            firstName;
+    private String                firstName;
 
     /**
      * The preferred name of this patient
      */
     @Length ( max = 20 )
-    private String            preferredName;
+    private String                preferredName;
 
     /**
      * The last name of this patient
      */
     @Length ( min = 1 )
-    private String            lastName;
+    private String                lastName;
 
     /**
      * The email address of this patient
      */
     @Length ( max = 30 )
-    private String            email;
+    private String                email;
 
     /**
      * The address line 1 of this patient
      */
     @Length ( max = 50 )
-    private String            address1;
+    private String                address1;
 
     /**
      * The address line 2 of this patient
      */
     @Length ( max = 50 )
-    private String            address2;
+    private String                address2;
 
     /**
      * The city of residence of this patient
      */
     @Length ( max = 15 )
-    private String            city;
+    private String                city;
 
     /**
      * The state of residence of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private State             state;
+    private State                 state;
 
     /**
      * The zip code of this patient
      */
     @Length ( min = 5, max = 10 )
-    private String            zip;
+    private String                zip;
 
     /**
      * The phone number of this patient
      */
     @Length ( min = 12, max = 12 )
-    private String            phone;
+    private String                phone;
 
     /** The number of doses of the vaccine the patient has */
-    private String            doses;
+    private String                doses;
 
     /** The vaccine the patient has recieved (if applicable) */
     @ManyToOne
-    private VaccineType       vaccine;
+    private VaccineType           vaccine;
 
     /**
      * The birthday of this patient
@@ -108,7 +111,7 @@ public class Patient extends User {
     // Allows the field to show up nicely in the database
     @Convert ( converter = LocalDateConverter.class )
     @JsonAdapter ( LocalDateAdapter.class )
-    private LocalDate         dateOfBirth;
+    private LocalDate             dateOfBirth;
 
     /**
      * The date of death of this patient
@@ -117,36 +120,43 @@ public class Patient extends User {
     // Allows the field to show up nicely in the database
     @Convert ( converter = LocalDateConverter.class )
     @JsonAdapter ( LocalDateAdapter.class )
-    private LocalDate         dateOfDeath;
+    private LocalDate             dateOfDeath;
 
     /**
      * The cause of death of this patient
      */
-    private String            causeOfDeath;
+    private String                causeOfDeath;
 
     /**
      * The blood type of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private BloodType         bloodType;
+    private BloodType             bloodType;
 
     /**
      * The ethnicity of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private Ethnicity         ethnicity;
+    private Ethnicity             ethnicity;
 
     /**
      * The gender of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private Gender            gender;
+    private Gender                gender;
 
     /**
      * The vaccination status of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private VaccinationStatus status;
+    private VaccinationStatus     status;
+
+    /**
+     * Patient Advocates associated with the Patient
+     */
+    @ManyToMany
+    @JsonIgnore
+    private List<PatientAdvocate> patientAdvocates;
 
     /**
      * For Hibernate
@@ -203,6 +213,8 @@ public class Patient extends User {
         setGender( Gender.parse( form.getGender() ) );
 
         setDoses( form.getDoses() );
+
+        setPatientAdvocates( form.getPatientAdvocates() );
 
         return this;
     }
@@ -570,6 +582,25 @@ public class Patient extends User {
      */
     public void setGender ( final Gender gender ) {
         this.gender = gender;
+    }
+
+    /**
+     * Gets the patient's Patient Advocates
+     *
+     * @return List
+     */
+    public List<PatientAdvocate> getPatientAdvocates () {
+        return patientAdvocates;
+    }
+
+    /**
+     * Sets the patient's Patient Advocates
+     *
+     * @param patientAdvocates
+     *            New List of Patient Advocates
+     */
+    public void setPatientAdvocates ( final List<PatientAdvocate> patientAdvocates ) {
+        this.patientAdvocates = patientAdvocates;
     }
 
 }
