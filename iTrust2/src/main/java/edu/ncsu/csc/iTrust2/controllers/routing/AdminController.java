@@ -120,4 +120,17 @@ public class AdminController {
     public String editPatientAdvocates ( final Model model ) {
         return "/admin/editPatientAdvocates";
     }
+
+    /**
+     * Edit patient advocates
+     *
+     * @param model
+     *            data for front end
+     * @return mapping
+     */
+    @RequestMapping ( value = "admin/associatePA" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public String associatePA ( final Model model ) {
+        return "/admin/associatePA";
+    }
 }

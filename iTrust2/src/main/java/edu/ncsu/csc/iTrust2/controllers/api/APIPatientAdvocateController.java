@@ -1,5 +1,6 @@
 package edu.ncsu.csc.iTrust2.controllers.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.iTrust2.forms.PatientAdvocateForm;
+import edu.ncsu.csc.iTrust2.models.Patient;
 import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
 import edu.ncsu.csc.iTrust2.services.PatientAdvocateService;
-import edu.ncsu.csc.iTrust2.services.UserService;
+import edu.ncsu.csc.iTrust2.services.PatientService;
 import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
 
 /**
@@ -33,12 +35,6 @@ import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
 @SuppressWarnings ( { "rawtypes", "unchecked" } )
 public class APIPatientAdvocateController extends APIController {
     /**
-     * User Service
-     */
-    @Autowired
-    private UserService            userService;
-
-    /**
      * LoggerUtil
      */
     @Autowired
@@ -46,6 +42,9 @@ public class APIPatientAdvocateController extends APIController {
 
     @Autowired
     private PatientAdvocateService patientAdvocateService;
+
+    @Autowired
+    private PatientService         patientService;
 
     /**
      * Retrieves and returns a list of all Patient Advocates stored in the
@@ -121,4 +120,65 @@ public class APIPatientAdvocateController extends APIController {
                     HttpStatus.BAD_REQUEST );
         }
     }
+
+    /**
+     * Get PA and patients then add them to their own associate List
+     *
+     * @param patA
+     *            patient advocate user name
+     * @param pid
+     *            patient user name
+     * @return ok
+     */
+    @PutMapping ( BASE_PATH + "/pas/associate/{patA}/{p}" )
+    public ResponseEntity associatePa ( @PathVariable final String patA, @PathVariable final String p ) {
+
+        boolean userEdit = false;
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final SimpleGrantedAuthority admin = new SimpleGrantedAuthority( "ROLE_ADMIN" );
+        try {
+            userEdit = !auth.getAuthorities().contains( admin );
+            if ( !auth.getName().equals( patA ) && userEdit ) {
+                return new ResponseEntity( errorResponse( "You do not have permission to edit this record" ),
+                        HttpStatus.UNAUTHORIZED );
+            }
+
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( HttpStatus.UNAUTHORIZED );
+        }
+
+        final PatientAdvocate patientAdvocate = (PatientAdvocate) patientAdvocateService.findByName( patA );
+        if ( null == patientAdvocate ) {
+            return new ResponseEntity( errorResponse( "Patient Advocate not found" ), HttpStatus.NOT_FOUND );
+        }
+
+        final Patient patient = (Patient) patientService.findByName( p );
+        if ( null == patient ) {
+            return new ResponseEntity( errorResponse( "Patient not found" ), HttpStatus.NOT_FOUND );
+        }
+
+        List<Patient> pat = patientAdvocate.getPatients();
+        if ( pat == null ) {
+            pat = new ArrayList<Patient>();
+        }
+        pat.add( patient );
+        patientAdvocate.setPatients( pat );
+        patientAdvocateService.save( patientAdvocate );
+
+        List<PatientAdvocate> pa;
+        pa = patient.getPatientAdvocates();
+
+        if ( pa == null ) {
+            pa = new ArrayList<PatientAdvocate>();
+        }
+
+        pa.add( patientAdvocate );
+        patient.setPatientAdvocates( pa );
+        patientService.save( patient );
+
+        return new ResponseEntity( HttpStatus.OK );
+
+    }
+
 }

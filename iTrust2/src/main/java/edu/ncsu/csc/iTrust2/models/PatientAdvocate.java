@@ -5,9 +5,11 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 
 import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import edu.ncsu.csc.iTrust2.forms.PatientAdvocateForm;
 import edu.ncsu.csc.iTrust2.forms.UserForm;
@@ -93,7 +95,8 @@ public class PatientAdvocate extends User {
     /**
      * Patients associated with the Patient Advocate
      */
-    @OneToMany
+    @ManyToMany
+    @JsonIgnore
     private List<Patient> patients;
 
     /**
