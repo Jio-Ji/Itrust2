@@ -2,10 +2,12 @@ package edu.ncsu.csc.iTrust2.forms;
 
 import java.util.List;
 
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import edu.ncsu.csc.iTrust2.models.Patient;
 import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
@@ -75,7 +77,8 @@ public class PatientAdvocateForm {
     /**
      * Patients associated with the Patient Advocates
      */
-    @OneToMany
+    @ManyToMany
+    @JsonIgnore
     private List<Patient> patients;
 
     /**

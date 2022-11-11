@@ -1,0 +1,150 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>Associate patient advocate</title>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+		<script th::inline="javascript">
+		/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+		/*<![CDATA[*/
+ 			var app = angular.module("associatePAApp", []);
+			app.controller("associatePACtrl", function($scope, $http) {
+				
+			$scope.displayName = function(p) {
+				return p.firstName + " " + p.lastName + " (" + p.username + ")";
+			}
+					
+	        $scope.loadpatients = function () {
+				$http.get("/iTrust2/api/v1/patients").then(
+						function(response) {
+							$scope.patients = response.data;
+						});
+	        }
+	        
+	        $scope.loadPA = function () {
+	        	$http.get("/iTrust2/api/v1/pas").then(
+						function(response) {
+							$scope.PA = response.data;
+						});
+		    }
+	        
+	        
+	        $scope.associatePA = function () {
+				console.log($scope.selectedPatient);
+				console.log($scope.selectedPAs);
+	        	$http.put("/iTrust2/api/v1/pas/associate/" + $scope.selectedPAs + "/" + $scope.selectedPatient).then(
+	                    function (response) {
+	                      $scope.resetSelected();
+						  $scope.failure = false;
+						  $scope.success = true;
+	                    }, function (rejection) {
+	                      $scope.errorAdding = "Failed to associate.";
+	            });
+	        }
+
+			$scope.originalForm = {};
+			$scope.patientForm = {};
+			$scope.patientForm = {};
+			$scope.selectPatient = function(patient, override) {
+
+				
+				var pf = $scope.patientForm = {};
+				var of = $scope.originalForm = {};
+				
+				// make a copy of the patient
+				for (var field in patient) {
+					if (field[0] == '$') continue; // don't mess with angular fields
+					pf[field] = of[field] = patient[field];
+				}
+				pf.dateOfBirth = new Date(of.dateOfBirth);
+				pf.username = of.username = patient.username;
+				// swap out enum id's for names
+				for (var i in $scope.states)
+					if (patient.state == $scope.states[i].id) {
+						pf.state = of.state = $scope.states[i].name;
+						break;
+					}
+				
+				$scope.selectedPatient = pf.username;
+			}
+			
+			$scope.selectPA = function(PA, override) {
+
+				
+				var pf = $scope.patientAdvocateForm = {};
+				var of = $scope.originalForm = {};
+				
+				// make a copy of the patient
+				for (var field in PA) {
+					if (field[0] == '$') continue; // don't mess with angular fields
+					pf[field] = of[field] = PA[field];
+				}
+				pf.dateOfBirth = new Date(of.dateOfBirth);
+				pf.username = of.username = PA.username;
+				// swap out enum id's for names
+				for (var i in $scope.states)
+					if (PA.state == $scope.states[i].id) {
+						pf.state = of.state = $scope.states[i].name;
+						break;
+					}
+				
+				$scope.selectedPAs = pf.username;
+			}
+			
+			
+
+	        $scope.resetSelected = function () {
+	            $scope.selectedPAs = {};
+	            $scope.selectedPatient = {};
+	        };
+			
+		$scope.loadpatients();
+		$scope.loadPA();
+		});
+			
+</script>
+		<div ng-app="associatePAApp" ng-controller="associatePACtrl">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3>Associate patient advocate with patient</h3>
+				</div>
+						<div class="panel-body">
+								<div style="float: left; width: 30%; height: 75%; overflow-y: auto">
+				<h2>Patients:</h2>
+				<ul style="overflow: auto;height=90%;">
+					<li ng-repeat="patient in patients"><h4>
+							<label> <input type="radio"
+								ng-model="$parent.selectedPatient" name="patient"
+								value="{{patient.username}}"
+								ng-click='$parent.selectPatient(patient)' />&nbsp;{{$parent.displayName(patient)}}
+							</label>
+						</h4></li>
+				</ul>
+				
+				<h2>PA:</h2>
+				<ul style="overflow: auto;height=90%;">
+					<li ng-repeat="PA in PA"><h4>
+							<label> <input type="radio"
+								ng-model="$parent.selectedPAs" name="PA"
+								value="{{PA.username}}"
+								ng-click='$parent.selectPA(PA)' />&nbsp;{{$parent.displayName(PA)}}
+							</label>
+						</h4></li>
+				</ul>
+				
+				<button type="button" ng-click="associatePA()"> Associate </button>	
+				<div ng-show="success">Patient and PA Successfully associated.</div>
+
+					
+				
+				
+			</div>     
+</script>
+
+	
+					
+</body>
+</html>

@@ -1,5 +1,6 @@
 package edu.ncsu.csc.iTrust2.unit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import edu.ncsu.csc.iTrust2.TestConfig;
 import edu.ncsu.csc.iTrust2.forms.UserForm;
 import edu.ncsu.csc.iTrust2.models.Patient;
+import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.VaccineType;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
@@ -83,6 +85,7 @@ public class PatientTest {
         p1.setLastName( "Liebknecht" );
         p1.setDoses( "1" );
         p1.setVaccineType( vacc );
+        p1.setPatientAdvocates( new ArrayList<PatientAdvocate>() );
         service.save( p1 );
 
         final User userRecord = service.findByName( USER_1 );
@@ -94,6 +97,8 @@ public class PatientTest {
         Assertions.assertEquals( "testvac", p1.getVaccineType().getName() );
 
         Assertions.assertEquals( Patient.class, userRecord.getClass() );
+
+        Assertions.assertEquals( 0, p1.getPatientAdvocates().size() );
 
         final Patient retrieved = (Patient) userRecord;
 

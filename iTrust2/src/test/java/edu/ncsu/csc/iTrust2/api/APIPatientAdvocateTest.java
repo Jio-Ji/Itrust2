@@ -22,10 +22,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import edu.ncsu.csc.iTrust2.common.TestUtils;
 import edu.ncsu.csc.iTrust2.forms.PatientAdvocateForm;
 import edu.ncsu.csc.iTrust2.forms.UserForm;
+import edu.ncsu.csc.iTrust2.models.Patient;
 import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
 import edu.ncsu.csc.iTrust2.models.enums.State;
 import edu.ncsu.csc.iTrust2.services.PatientAdvocateService;
+import edu.ncsu.csc.iTrust2.services.PatientService;
 
 /**
  * Test for API functionality for interacting with Patient Advocates
@@ -42,7 +44,10 @@ public class APIPatientAdvocateTest {
     private MockMvc                                 mvc;
 
     @Autowired
-    private PatientAdvocateService<PatientAdvocate> service;
+    private PatientAdvocateService<PatientAdvocate> paService;
+
+    @Autowired
+    private PatientService<Patient>                 pService;
 
     /**
      * Sets up test
@@ -50,7 +55,8 @@ public class APIPatientAdvocateTest {
     @BeforeEach
     public void setup () {
 
-        service.deleteAll();
+        paService.deleteAll();
+        pService.deleteAll();
     }
 
     /**
@@ -83,13 +89,13 @@ public class APIPatientAdvocateTest {
 
         final PatientAdvocate antti = new PatientAdvocate( new UserForm( "antti", "123456", Role.ROLE_PA, 1 ) );
 
-        service.save( antti );
+        paService.save( antti );
 
         // Should also now be able to edit existing record with new information
         mvc.perform( put( "/api/v1/pas/antti" ).with( csrf() ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( patient ) ) ).andExpect( status().isOk() );
 
-        PatientAdvocate anttiRetrieved = (PatientAdvocate) service.findByName( "antti" );
+        PatientAdvocate anttiRetrieved = (PatientAdvocate) paService.findByName( "antti" );
 
         // Test a few fields to be reasonably confident things are working
         Assertions.assertEquals( "Walhelm", anttiRetrieved.getLastName() );
@@ -103,13 +109,36 @@ public class APIPatientAdvocateTest {
         mvc.perform( put( "/api/v1/pas/antti" ).with( csrf() ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( patient ) ) ).andExpect( status().isOk() );
 
-        anttiRetrieved = (PatientAdvocate) service.findByName( "antti" );
+        anttiRetrieved = (PatientAdvocate) paService.findByName( "antti" );
 
         Assertions.assertNotNull( anttiRetrieved.getPreferredName() );
 
         // Editing with the wrong username should fail.
         mvc.perform( put( "/api/v1/pas/badusername" ).with( csrf() ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( patient ) ) ).andExpect( status().is4xxClientError() );
+
+    }
+
+    @Test
+    @WithMockUser ( username = "admin", roles = { "ADMIN" } )
+    @Transactional
+    public void testAssociateAPI () throws Exception {
+
+        final PatientAdvocate antti = new PatientAdvocate( new UserForm( "antti", "123456", Role.ROLE_PA, 1 ) );
+
+        final Patient antta = new Patient( new UserForm( "antta", "123456", Role.ROLE_PATIENT, 1 ) );
+
+        paService.save( antti );
+        pService.save( antta );
+
+        // Should also now be able to edit existing record with new information
+        mvc.perform(
+                put( "/api/v1/pas/associate/antti/antta" ).with( csrf() ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isOk() );
+
+        final Patient pa1 = (Patient) pService.findByName( "antta" );
+
+        Assertions.assertEquals( pa1.getPatientAdvocates().get( 0 ), antti );
 
     }
 }
