@@ -43,10 +43,14 @@ import edu.ncsu.csc.iTrust2.services.PatientService;
 @AutoConfigureMockMvc
 @ActiveProfiles ( { "test" } )
 public class APIPatientTest {
-
+    /**
+     * The mvc
+     */
     @Autowired
     private MockMvc                 mvc;
-
+    /**
+     * The patient service
+     */
     @Autowired
     private PatientService<Patient> service;
 

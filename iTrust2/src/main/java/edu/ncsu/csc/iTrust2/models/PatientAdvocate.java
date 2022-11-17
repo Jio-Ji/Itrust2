@@ -17,7 +17,7 @@ import edu.ncsu.csc.iTrust2.models.enums.Role;
 import edu.ncsu.csc.iTrust2.models.enums.State;
 
 /**
- * Represents a Patient Advocate stored in the iTrust2 system
+ * Represents a Patient Advocate stored in the iTrust2 system.
  *
  * @author Austin Heyward
  * @author Nick Bleuzen
@@ -162,103 +162,237 @@ public class PatientAdvocate extends User {
         return this;
     }
 
+    /**
+     * Get the FirstName
+     *
+     * @return the FirstName
+     */
     public String getFirstName () {
         return firstName;
     }
 
+    /**
+     * Set the FirstName
+     *
+     * @param firstName
+     *            the firstName
+     */
     public void setFirstName ( final String firstName ) {
         this.firstName = firstName;
     }
 
+    /**
+     * Get the MiddleName
+     *
+     * @return the MiddleName
+     */
     public String getMiddleName () {
         return middleName;
     }
 
+    /**
+     * Set the MiddleName
+     *
+     * @param middleName
+     *            the middleName
+     */
     public void setMiddleName ( final String middleName ) {
         this.middleName = middleName;
     }
 
+    /**
+     * Get the LastName
+     *
+     * @return the LastName
+     */
     public String getLastName () {
         return lastName;
     }
 
+    /**
+     * Set the LastName
+     *
+     * @param lastName
+     *            the lastName
+     */
     public void setLastName ( final String lastName ) {
         this.lastName = lastName;
     }
 
+    /**
+     * Get the PreferredName
+     *
+     * @return the PreferredName
+     */
     public String getPreferredName () {
         return preferredName;
     }
 
+    /**
+     * Set the PreferredName
+     *
+     * @param preferredName
+     *            the preferredName
+     */
     public void setPreferredName ( final String preferredName ) {
         this.preferredName = preferredName;
     }
 
+    /**
+     * Get the Email
+     *
+     * @return the Email
+     */
     public String getEmail () {
         return email;
     }
 
+    /**
+     * Set the Email
+     *
+     * @param email
+     *            the email
+     */
     public void setEmail ( final String email ) {
         this.email = email;
     }
 
+    /**
+     * Get the Phone
+     *
+     * @return the Phone
+     */
     public String getPhone () {
         return phone;
     }
 
+    /**
+     * Set the Phone
+     *
+     * @param phone
+     *            the phone
+     */
     public void setPhone ( final String phone ) {
         this.phone = phone;
     }
 
+    /**
+     * Get the Address1
+     *
+     * @return the Address1
+     */
     public String getAddress1 () {
         return address1;
     }
 
+    /**
+     * Set the Address1
+     *
+     * @param address1
+     *            the address1
+     */
     public void setAddress1 ( final String address1 ) {
         this.address1 = address1;
     }
 
+    /**
+     * Get the Address2
+     *
+     * @return the Address2
+     */
     public String getAddress2 () {
         return address2;
     }
 
+    /**
+     * Set the Address2
+     *
+     * @param address2
+     *            the address2
+     */
     public void setAddress2 ( final String address2 ) {
         this.address2 = address2;
     }
 
+    /**
+     * Get the City
+     *
+     * @return the City
+     */
     public String getCity () {
         return city;
     }
 
+    /**
+     * Set the City
+     *
+     * @param city
+     *            the city
+     */
     public void setCity ( final String city ) {
         this.city = city;
     }
 
+    /**
+     * Get the State
+     *
+     * @return the State
+     */
     public State getState () {
         return state;
     }
 
+    /**
+     * Set the State
+     *
+     * @param state
+     *            the state
+     */
     public void setState ( final State state ) {
         this.state = state;
     }
 
+    /**
+     * Get the zip
+     *
+     * @return the zip
+     */
     public String getZip () {
         return zip;
     }
 
+    /**
+     * Set the zip
+     *
+     * @param zip
+     *            the zip
+     */
     public void setZip ( final String zip ) {
         this.zip = zip;
     }
 
+    /**
+     * Get the list of patients
+     *
+     * @return the list of patients
+     */
     public List<Patient> getPatients () {
         return patients;
     }
 
+    /**
+     * Set the list of patients.
+     *
+     * @param patients
+     *            list of patients
+     */
     public void setPatients ( final List<Patient> patients ) {
         this.patients = patients;
     }
 
     /**
+     * Get the boolean for prescription
+     *
      * @return the prescription
      */
     public boolean isPrescription () {
@@ -266,6 +400,8 @@ public class PatientAdvocate extends User {
     }
 
     /**
+     * Set the prescription
+     *
      * @param prescription
      *            the prescription to set
      */
@@ -274,6 +410,8 @@ public class PatientAdvocate extends User {
     }
 
     /**
+     * Get the boolean for billing
+     *
      * @return the billing
      */
     public boolean isBilling () {
@@ -281,6 +419,8 @@ public class PatientAdvocate extends User {
     }
 
     /**
+     * Set the billing
+     *
      * @param billing
      *            the billing to set
      */
@@ -289,6 +429,8 @@ public class PatientAdvocate extends User {
     }
 
     /**
+     * Get the boolean for office visit
+     *
      * @return the officeVisit
      */
     public boolean isOfficeVisit () {
@@ -296,6 +438,8 @@ public class PatientAdvocate extends User {
     }
 
     /**
+     * Set the office visit.
+     *
      * @param officeVisit
      *            the officeVisit to set
      */
