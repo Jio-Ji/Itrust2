@@ -39,10 +39,14 @@ public class APIPatientAdvocateController extends APIController {
      */
     @Autowired
     private LoggerUtil             loggerUtil;
-
+    /**
+     * The patient advocate service
+     */
     @Autowired
     private PatientAdvocateService patientAdvocateService;
-
+    /**
+     * The patient service
+     */
     @Autowired
     private PatientService         patientService;
 
@@ -126,9 +130,9 @@ public class APIPatientAdvocateController extends APIController {
      *
      * @param patA
      *            patient advocate user name
-     * @param pid
+     * @param p
      *            patient user name
-     * @return ok
+     * @return response
      */
     @PutMapping ( BASE_PATH + "/pas/associate/{patA}/{p}" )
     public ResponseEntity associatePa ( @PathVariable final String patA, @PathVariable final String p ) {

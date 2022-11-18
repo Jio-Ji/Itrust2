@@ -33,6 +33,7 @@ import edu.ncsu.csc.iTrust2.services.PatientService;
  * Test for API functionality for interacting with Patient Advocates
  *
  * @author Qichen Wang
+ * @author Shaolong zhou
  *
  */
 @ExtendWith ( SpringExtension.class )
@@ -40,12 +41,19 @@ import edu.ncsu.csc.iTrust2.services.PatientService;
 @AutoConfigureMockMvc
 @ActiveProfiles ( { "test" } )
 public class APIPatientAdvocateTest {
+    /**
+     * The mvc
+     */
     @Autowired
     private MockMvc                                 mvc;
-
+    /**
+     * The patient advocate service
+     */
     @Autowired
     private PatientAdvocateService<PatientAdvocate> paService;
-
+    /**
+     * The patient service
+     */
     @Autowired
     private PatientService<Patient>                 pService;
 
@@ -63,6 +71,7 @@ public class APIPatientAdvocateTest {
      * Tests PatientAdvocateAPI
      *
      * @throws Exception
+     *             if it does not run in a right way
      */
     @Test
     @WithMockUser ( username = "admin", roles = { "ADMIN" } )
@@ -119,6 +128,12 @@ public class APIPatientAdvocateTest {
 
     }
 
+    /**
+     * Test associate api method.
+     *
+     * @throws Exception
+     *             if it does not run in a right way
+     */
     @Test
     @WithMockUser ( username = "admin", roles = { "ADMIN" } )
     @Transactional
