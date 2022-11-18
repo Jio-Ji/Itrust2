@@ -97,10 +97,10 @@ public class PatientAdvocateForm {
     private boolean       officeVisit;
 
     /**
-     * Populate the patient form from a patient object
+     * Populate the patient advocate form from a patient advocate object
      *
-     * @param patient
-     *            the patient object to set the form with
+     * @param patientAdvocate
+     *            the patient advocate object to set the form with
      */
     public PatientAdvocateForm ( final PatientAdvocate patientAdvocate ) {
         if ( null == patientAdvocate ) {
@@ -128,111 +128,256 @@ public class PatientAdvocateForm {
         setOfficeVisit( patientAdvocate.isOfficeVisit() );
     }
 
+    /**
+     * Get the username
+     *
+     * @return the username
+     */
     public String getUsername () {
         return username;
     }
 
+    /**
+     * Set the user name
+     *
+     * @param username
+     *            the username
+     */
     public void setUsername ( final String username ) {
         this.username = username;
     }
 
+    /**
+     * Get the first name
+     *
+     * @return the frist name
+     */
     public String getFirstName () {
         return firstName;
     }
 
+    /**
+     * Set the first name
+     *
+     * @param firstName
+     *            the firstname
+     */
     public void setFirstName ( final String firstName ) {
         this.firstName = firstName;
     }
 
+    /**
+     * Get the middle name
+     *
+     * @return the middle name
+     */
     public String getMiddleName () {
         return middleName;
     }
 
+    /**
+     * Set the middle name
+     *
+     * @param middleName
+     *            the middle name
+     */
     public void setMiddleName ( final String middleName ) {
         this.middleName = middleName;
     }
 
+    /**
+     * Get the last name
+     *
+     * @return the last name
+     */
     public String getLastName () {
         return lastName;
     }
 
+    /**
+     * Set the last name
+     *
+     * @param lastName
+     *            the last name
+     */
     public void setLastName ( final String lastName ) {
         this.lastName = lastName;
     }
 
+    /**
+     * Get preferred name
+     *
+     * @return the preferred name
+     */
     public String getPreferredName () {
         return preferredName;
     }
 
+    /**
+     * Set the preferred name
+     *
+     * @param preferredName
+     *            the preferred name
+     */
     public void setPreferredName ( final String preferredName ) {
         this.preferredName = preferredName;
     }
 
+    /**
+     * Get the email
+     *
+     * @return the email
+     */
     public String getEmail () {
         return email;
     }
 
+    /**
+     * Set the email
+     *
+     * @param email
+     *            the email
+     */
     public void setEmail ( final String email ) {
         this.email = email;
     }
 
+    /**
+     * Get the phone
+     *
+     * @return the phone
+     */
     public String getPhone () {
         return phone;
     }
 
+    /**
+     * Set the phone
+     *
+     * @param phone
+     *            the phone
+     */
     public void setPhone ( final String phone ) {
         this.phone = phone;
     }
 
+    /**
+     * Get the address1
+     *
+     * @return the address1
+     */
     public String getAddress1 () {
         return address1;
     }
 
+    /**
+     * Set the address1
+     *
+     * @param address1
+     *            the address1
+     */
     public void setAddress1 ( final String address1 ) {
         this.address1 = address1;
     }
 
+    /**
+     * Get the address2
+     *
+     * @return the address2
+     */
     public String getAddress2 () {
         return address2;
     }
 
+    /**
+     * Set the address2
+     *
+     * @param address2
+     *            the address2
+     */
     public void setAddress2 ( final String address2 ) {
         this.address2 = address2;
     }
 
+    /**
+     * Get the city
+     *
+     * @return the city
+     */
     public String getCity () {
         return city;
     }
 
+    /**
+     * Set the city
+     *
+     * @param city
+     *            the city
+     */
     public void setCity ( final String city ) {
         this.city = city;
     }
 
+    /**
+     * Get the state
+     *
+     * @return the state
+     */
     public String getState () {
         return state;
     }
 
+    /**
+     * Set the state
+     *
+     * @param state
+     *            the state
+     */
     public void setState ( final String state ) {
         this.state = state;
     }
 
+    /**
+     * Get the zip
+     *
+     * @return the zip
+     */
     public String getZip () {
         return zip;
     }
 
+    /**
+     * Set the zip
+     *
+     * @param zip
+     *            the zip
+     */
     public void setZip ( final String zip ) {
         this.zip = zip;
     }
 
+    /**
+     * Get the list of patients
+     *
+     * @return the list of patients
+     */
     public List<Patient> getPatients () {
         return patients;
     }
 
+    /**
+     * Set the list of patients
+     *
+     * @param patients
+     *            the list of patients
+     */
     public void setPatients ( final List<Patient> patients ) {
         this.patients = patients;
     }
 
     /**
+     * Get the prescription
+     *
      * @return the prescription
      */
     public boolean isPrescription () {
@@ -240,6 +385,8 @@ public class PatientAdvocateForm {
     }
 
     /**
+     * Set the prescription
+     *
      * @param prescription
      *            the prescription to set
      */
@@ -248,6 +395,8 @@ public class PatientAdvocateForm {
     }
 
     /**
+     * Get the billing
+     *
      * @return the billing
      */
     public boolean isBilling () {
@@ -255,6 +404,8 @@ public class PatientAdvocateForm {
     }
 
     /**
+     * Set the billing
+     *
      * @param billing
      *            the billing to set
      */
@@ -263,6 +414,8 @@ public class PatientAdvocateForm {
     }
 
     /**
+     * Get the office visit
+     *
      * @return the officeVisit
      */
     public boolean isOfficeVisit () {
@@ -270,6 +423,8 @@ public class PatientAdvocateForm {
     }
 
     /**
+     * Set the office visit
+     *
      * @param officeVisit
      *            the officeVisit to set
      */
