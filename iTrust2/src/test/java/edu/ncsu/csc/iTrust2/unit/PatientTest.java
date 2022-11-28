@@ -22,6 +22,7 @@ import edu.ncsu.csc.iTrust2.models.PatientAdvocate;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.VaccineType;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
+import edu.ncsu.csc.iTrust2.services.PatientAdvocateService;
 import edu.ncsu.csc.iTrust2.services.PatientService;
 import edu.ncsu.csc.iTrust2.services.VaccineTypeService;
 
@@ -36,16 +37,19 @@ import edu.ncsu.csc.iTrust2.services.VaccineTypeService;
 public class PatientTest {
 
     @Autowired
-    private PatientService<Patient> service;
+    private PatientService<Patient>                 service;
 
     @Autowired
-    private VaccineTypeService      s;
+    private PatientAdvocateService<PatientAdvocate> paService;
 
-    private static final String     USER_1 = "demoTestUser1";
+    @Autowired
+    private VaccineTypeService                      s;
 
-    private static final String     USER_2 = "demoTestUser2";
+    private static final String                     USER_1 = "demoTestUser1";
 
-    private static final String     PW     = "123456";
+    private static final String                     USER_2 = "demoTestUser2";
+
+    private static final String                     PW     = "123456";
 
     @BeforeEach
     public void setup () {
@@ -114,5 +118,46 @@ public class PatientTest {
             // expected
         }
 
+    }
+
+    /**
+     * Tests editing the patient advocate
+     */
+    @Test
+    @Transactional
+    public void testEditPatientAdvocate () {
+        final Patient p1 = new Patient( new UserForm( USER_1, PW, Role.ROLE_PATIENT, 1 ) );
+        p1.setFirstName( "Karl" );
+        p1.setLastName( "Liebknecht" );
+        p1.setPatientAdvocates( new ArrayList<PatientAdvocate>() );
+        final PatientAdvocate pa1 = new PatientAdvocate( new UserForm( USER_2, PW, Role.ROLE_PA, 1 ) );
+        pa1.setPrescription( false );
+        pa1.setBilling( false );
+        pa1.setOfficeVisit( false );
+        paService.save( pa1 );
+        p1.getPatientAdvocates().add( pa1 );
+        service.save( p1 );
+
+        List<Patient> savedRecords = service.findAll();
+        Assertions.assertEquals( 1, savedRecords.get( 0 ).getPatientAdvocates().size() );
+        Assertions.assertEquals( USER_2, savedRecords.get( 0 ).getPatientAdvocates().get( 0 ).getId() );
+
+        Assertions.assertFalse( savedRecords.get( 0 ).getPatientAdvocates().get( 0 ).isPrescription() );
+        Assertions.assertFalse( savedRecords.get( 0 ).getPatientAdvocates().get( 0 ).isBilling() );
+        Assertions.assertFalse( savedRecords.get( 0 ).getPatientAdvocates().get( 0 ).isOfficeVisit() );
+
+        Assertions.assertTrue( p1.editPatientAdvocate( USER_2, true, false, true ) );
+
+        paService.save( p1.getPatientAdvocates().get( 0 ) );
+        service.save( p1 );
+        savedRecords = service.findAll();
+
+        Assertions.assertTrue( p1.getPatientAdvocates().get( 0 ).isPrescription() );
+        Assertions.assertFalse( p1.getPatientAdvocates().get( 0 ).isBilling() );
+        Assertions.assertTrue( p1.getPatientAdvocates().get( 0 ).isOfficeVisit() );
+
+        Assertions.assertTrue( savedRecords.get( 0 ).getPatientAdvocates().get( 0 ).isPrescription() );
+        Assertions.assertFalse( savedRecords.get( 0 ).getPatientAdvocates().get( 0 ).isBilling() );
+        Assertions.assertTrue( savedRecords.get( 0 ).getPatientAdvocates().get( 0 ).isOfficeVisit() );
     }
 }
