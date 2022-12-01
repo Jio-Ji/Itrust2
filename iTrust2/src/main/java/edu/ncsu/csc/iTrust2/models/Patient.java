@@ -603,4 +603,31 @@ public class Patient extends User {
         this.patientAdvocates = patientAdvocates;
     }
 
+    /**
+     * The patient edits the permissions of the patient advocate whom is
+     * associated with.
+     *
+     * @param patientAdvocate
+     *            id of patient advocate
+     * @param prescription
+     *            the updated prescription
+     * @param billing
+     *            the updated billing
+     * @param officeVisit
+     *            the updated officeVisit
+     * @return true if the permissions are edited successfully or false
+     */
+    public boolean editPatientAdvocate ( final String patientAdvocate, final boolean prescription,
+            final boolean billing, final boolean officeVisit ) {
+        for ( int i = 0; i < this.getPatientAdvocates().size(); i++ ) {
+            if ( this.getPatientAdvocates().get( i ).getId().equals( patientAdvocate ) ) {
+                this.getPatientAdvocates().get( i ).setPrescription( prescription );
+                this.getPatientAdvocates().get( i ).setBilling( billing );
+                this.getPatientAdvocates().get( i ).setOfficeVisit( officeVisit );
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
