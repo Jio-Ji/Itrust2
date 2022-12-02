@@ -79,8 +79,10 @@ public class APIPatientAdvocateController extends APIController {
         boolean userEdit = false;
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         final SimpleGrantedAuthority admin = new SimpleGrantedAuthority( "ROLE_ADMIN" );
+        final SimpleGrantedAuthority pa = new SimpleGrantedAuthority( "ROLE_PATIENT" );
+
         try {
-            userEdit = !auth.getAuthorities().contains( admin );
+            userEdit = !auth.getAuthorities().contains( admin ) && !auth.getAuthorities().contains( pa );
             if ( !auth.getName().equals( id ) && userEdit ) {
                 return new ResponseEntity( errorResponse( "You do not have permission to edit this record" ),
                         HttpStatus.UNAUTHORIZED );

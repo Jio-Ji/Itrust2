@@ -121,4 +121,17 @@ public class PatientController {
         return "/patient/viewBills";
     }
 
+    /**
+     * Create a page for the patient to manage Patient Advocate permissions
+     *
+     * @param model
+     *            data for front end
+     * @return The page for the patient to view bills
+     */
+    @GetMapping ( value = "patient/maintainPatientAdvocates" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public String maintainPatientAdvocates ( final Model model ) {
+        return "/patient/maintainPatientAdvocates";
+    }
+
 }
