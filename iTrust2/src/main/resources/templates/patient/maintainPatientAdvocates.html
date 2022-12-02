@@ -1,0 +1,163 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
+<title>Maintain Patient Advocates</title>
+<script th:src="@{/js/dateTimeService.js}"
+		src="../js/dateTimeService.js"></script>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+
+		<script th:inline="javascript">
+			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+			/*<![CDATA[*/
+
+			var app = angular.module('myApp', ['dateTimeServices']);
+			app
+					.controller(
+							'maintainPatientAdvocatesCtrl',
+							function($scope, $http, dateTimeService) {
+								$scope.displayName = function(p) {
+									return p.firstName + " " + p.middleName + " " + p.lastName + " (" + p.username + ")";
+								}
+								
+								// documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+								$scope.searchFilter = "";
+								$scope.filterPatients = function(patient) {
+									return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+								}
+								
+								function formDifferent(current, original) {
+									for (var field in original) {
+										if (current[field] != original[field]) return true;
+									}
+									return false;
+								}
+								
+								$scope.originalForm = {};
+								$scope.patientForm = {};
+								$scope.selectPatient = function(patient, override) {
+									if (!override && formDifferent($scope.patientForm, $scope.originalForm)) {
+										if (!confirm("You have made changes to " + $scope.patientForm.username
+												+ ". Would you like to continue? (changes will be lost)")) {
+											$scope.selectedPatient = "";
+											$scope.selectedPatient = $scope.patientForm.username;
+											return;
+										}
+									}
+									
+									var pf = $scope.patientForm = {};
+									var of = $scope.originalForm = {};
+									
+									// make a copy of the patient
+									for (var field in patient) {
+										if (field[0] == '$') continue; // don't mess with angular fields
+										pf[field] = of[field] = patient[field];
+									}
+									pf.dateOfBirth = new Date(of.dateOfBirth);
+									pf.username = of.username = patient.username;
+									// swap out enum id's for names
+									for (var i in $scope.states)
+										if (patient.state == $scope.states[i].id) {
+											pf.state = of.state = $scope.states[i].name;
+											break;
+										}
+									
+									$scope.selectedPatient = pf.username;
+								}
+								
+								$http.get("/iTrust2/api/v1/pas/mypas").then(
+										function(response) {
+											$scope.patients = response.data;
+										});
+								
+								$http.get("/iTrust2/api/v1/state").then(
+										function(response) {
+											$scope.states = response.data;
+										});
+
+								$scope.submit = function() {
+									var patient = angular.copy($scope.patientForm);
+
+									$http({
+										method : 'PUT',
+										url : '/iTrust2/api/v1/pas/' + patient.username,
+										data : patient
+									}).then(function(response) {
+										$scope.message = "Patient Advocates updated successfully.";
+										
+										// replace the patient in session 
+										for (var i in $scope.patients)
+											if ($scope.patients[i].username == response.data.username) {
+												$scope.patients[i] = response.data;
+												$scope.selectPatient(response.data, true);
+											}
+									}, function(rejection) {
+										if (rejection.data.msg) {
+											$scope.message = "Error: " + rejection.data.msg;
+										} else {
+											$scope.message = "An error occured updating Advocates.";
+										}
+									})
+								}
+							});
+
+			/*]]>*/
+		</script>
+
+
+
+		<div ng-app="myApp" ng-controller="maintainPatientAdvocatesCtrl">
+			<div style="float: left; width: 30%; height: 75%; overflow-y: auto">
+				<h2>Patient Advocates:</h2>
+				<!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
+				and https://docs.angularjs.org/api/ng/filter/filter -->
+				<h4>
+					Search: <input type="text" name="search" ng-model="searchFilter" />
+				</h4>
+				<!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
+				<!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
+				<ul style="overflow: auto; height: 90%;">
+					<!-- Information on how labels work from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
+					<li ng-repeat="patient in patients | filter:filterPatients"><h4>
+							<label> <input type="radio"
+								ng-model="$parent.selectedPatient" name="patient"
+								value="{{patient.username}}"
+								ng-click='$parent.selectPatient(patient)' />&nbsp;{{$parent.displayName(patient)}}
+							</label>
+						</h4></li>
+				</ul>
+			</div>
+			<!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+			<div
+				style="float: left; width: 70%; border-left: 1px solid #bbb; padding-left: 3%; height: 75%; overflow-y: auto">
+				<h2 id="header0">Edit Patient Advocate Permissions</h2>
+				<div ng-show="selectedPatient">
+					<table>
+						<tr>
+						<tr>
+							<td style="text-align: right; padding: 5px"><b>Prescription:</b></td>
+							<td><input type="checkbox" name="prescription"
+								ng-model="patientForm.prescription" /></td>
+						</tr>
+						<tr>
+							<td style="text-align: right; padding: 5px"><b>Billing:</b></td>
+							<td><input type="checkbox" name="billing"
+								ng-model="patientForm.billing" /></td>
+						</tr>
+						<tr>
+							<td style="text-align: right; padding: 5px"><b>Office Visit:</b></td>
+							<td><input type="checkbox" name="officeVisit"
+								ng-model="patientForm.officeVisit" /></td>
+						</tr>
+					</table>
+
+					<br />
+					<button ng-click="submit()" name="submit">Submit</button>
+
+					<div name="success">{{message}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

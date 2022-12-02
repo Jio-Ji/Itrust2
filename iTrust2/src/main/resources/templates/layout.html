@@ -111,6 +111,7 @@ a {
 					var virologistdropdown = document.getElementById('virologist-dropdown');
 					var vaccinator = document.getElementById('vaccinator-dropdown');
 					var bsm = document.getElementById('bsm-dropdown');
+					var pa = document.getElementById('pa-dropdown');
 					if (patientdropdown && !role.includes('PATIENT')) {
 						navbarparent.removeChild(patientdropdown);
 					}
@@ -134,6 +135,9 @@ a {
 					}
 					if (bsm && !role.includes('BSM')) {
 						navbarparent.removeChild(bsm);
+					}
+					if (pa && !role.includes('PA')) {
+						navbarparent.removeChild(pa);
 					}
 
 				});
@@ -243,6 +247,22 @@ a {
 								id="editdemographics-personnel">Edit Demographics</a></li>
 						</ul></li>
 				</ul>
+				
+								<!-- Patient Advocate navbar -->
+				<ul id="pa-dropdown" class="nav navbar-nav">
+					<li class="dropdown"><a class="dropdown-toggle"
+						data-toggle="dropdown" href="#">Patient Advocate<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="/iTrust2/pa/viewPatientInformation"
+								id="viewCPTcodes">View Patient Information</a></li>
+						</ul></li>
+					<li class="dropdown"><a class="dropdown-toggle"
+						data-toggle="dropdown" href="#">Edit<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="/iTrust2/personnel/editDemographics"
+								id="editdemographics-personnel">Edit Demographics</a></li>
+						</ul></li>
+				</ul>
 
 				<!-- Patient dropdown -->
 				<ul id="patient-dropdown" class="nav navbar-nav">
@@ -255,6 +275,9 @@ a {
 							<li><a
 								href="/iTrust2/patient/viewBills"
 								id="viewBills">View Bills</a></li>
+							<li><a
+								href="/iTrust2/patient/maintainPatientAdvocates"
+								id="maintainPatientAdvocates">Maintain Patient Advocates</a></li>								
 						</ul></li>
 					<li class="dropdown"><a class="dropdown-toggle"
 						data-toggle="dropdown" id="appointments" href="#">Appointments<span

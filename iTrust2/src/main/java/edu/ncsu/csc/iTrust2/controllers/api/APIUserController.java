@@ -272,11 +272,15 @@ public class APIUserController extends APIController {
 
         final User bsm = new Personnel( new UserForm( "bsm", "123456", Role.ROLE_BSM, 1 ) );
 
+        final User pa = new Personnel( new UserForm( "pa", "123456", Role.ROLE_PA, 1 ) );
+
         userService.save( patient );
 
         userService.save( vaccinator );
 
         userService.save( bsm );
+
+        userService.save( pa );
 
         loggerUtil.log( TransactionType.USERS_GENERATED, "" );
 
