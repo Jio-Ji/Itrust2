@@ -65,7 +65,7 @@
 									$scope.selectedPatient = pf.username;
 								}
 								
-								$http.get("/iTrust2/api/v1/pas").then(
+								$http.get("/iTrust2/api/v1/pas/mypas").then(
 										function(response) {
 											$scope.patients = response.data;
 										});
