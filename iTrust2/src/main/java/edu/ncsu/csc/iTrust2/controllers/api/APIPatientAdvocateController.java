@@ -22,6 +22,7 @@ import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
 import edu.ncsu.csc.iTrust2.services.PatientAdvocateService;
 import edu.ncsu.csc.iTrust2.services.PatientService;
+import edu.ncsu.csc.iTrust2.services.UserService;
 import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
 
 /**
@@ -49,6 +50,9 @@ public class APIPatientAdvocateController extends APIController {
      */
     @Autowired
     private PatientService         patientService;
+    /** User service */
+    @Autowired
+    private UserService<User>      userService;
 
     /**
      * Retrieves and returns a list of all Patient Advocates stored in the
@@ -60,6 +64,20 @@ public class APIPatientAdvocateController extends APIController {
     public List<PatientAdvocate> getPas () {
         final List<PatientAdvocate> pas = patientAdvocateService.findAll();
         return pas;
+    }
+
+    /**
+     * Retrieves and returns a list of all Patient Advocates associated with a
+     * patient
+     *
+     * @return list of patient advocates
+     */
+    @GetMapping ( BASE_PATH + "/pas/mypas" )
+    public List<PatientAdvocate> getMyPas () {
+        final User self = userService.findByName( LoggerUtil.currentUser() );
+        final List<PatientAdvocate> pas = patientAdvocateService.findAll();
+        final Patient pat = (Patient) self;
+        return pat.getPatientAdvocates();
     }
 
     /**
@@ -79,8 +97,10 @@ public class APIPatientAdvocateController extends APIController {
         boolean userEdit = false;
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         final SimpleGrantedAuthority admin = new SimpleGrantedAuthority( "ROLE_ADMIN" );
+        final SimpleGrantedAuthority pa = new SimpleGrantedAuthority( "ROLE_PATIENT" );
+
         try {
-            userEdit = !auth.getAuthorities().contains( admin );
+            userEdit = !auth.getAuthorities().contains( admin ) && !auth.getAuthorities().contains( pa );
             if ( !auth.getName().equals( id ) && userEdit ) {
                 return new ResponseEntity( errorResponse( "You do not have permission to edit this record" ),
                         HttpStatus.UNAUTHORIZED );
